@@ -11,6 +11,8 @@ const LS_LOCAL_ITEMS = "dt1_local_family_items_v1";
 const OLD_KEYS = ["dt1_items_v5_search","dt1_items_v4_categories","dt1_recipes_v3_secure","dt1_recipes_v2"];
 const LS_PIN = "dt1_admin_pin";
 const LS_ADMIN = "dt1_admin_unlocked";
+const LS_FAVORITES = "dt1_favorite_item_ids_v1";
+const LS_RECENTS = "dt1_recent_item_ids_v1";
 
 let centralItems = [];
 let localItems = [];
@@ -19,6 +21,8 @@ let selectedItemId = "";
 let currentPhotoData = "";
 let currentFilter = "Tous";
 let currentLetterFilter = "Tous";
+let favoriteIds = [];
+let recentIds = [];
 
 function normalizeItem(r, idx=0, source="local"){
   return {
@@ -116,6 +120,80 @@ async function loadCentralDatabase(force=false){
   }
 }
 
+
+function loadFavoritesAndRecents(){
+  try{ favoriteIds = JSON.parse(localStorage.getItem(LS_FAVORITES) || "[]"); }catch(e){ favoriteIds = []; }
+  try{ recentIds = JSON.parse(localStorage.getItem(LS_RECENTS) || "[]"); }catch(e){ recentIds = []; }
+}
+
+function saveFavorites(){
+  favoriteIds = favoriteIds.filter((id, index, arr) => arr.indexOf(id) === index);
+  localStorage.setItem(LS_FAVORITES, JSON.stringify(favoriteIds));
+}
+
+function saveRecents(){
+  recentIds = recentIds.filter((id, index, arr) => arr.indexOf(id) === index).slice(0,10);
+  localStorage.setItem(LS_RECENTS, JSON.stringify(recentIds));
+}
+
+function isFavorite(id){
+  return favoriteIds.includes(id);
+}
+
+function itemById(id){
+  return items.find(x => x.id === id);
+}
+
+function toggleFavorite(id){
+  if(!id) return;
+  if(isFavorite(id)){
+    favoriteIds = favoriteIds.filter(x => x !== id);
+  }else{
+    favoriteIds.unshift(id);
+  }
+  saveFavorites();
+  updatePreview();
+  renderQuickAccess();
+  renderRecipes();
+}
+
+function addRecent(id){
+  if(!id) return;
+  recentIds = [id, ...recentIds.filter(x => x !== id)].slice(0,10);
+  saveRecents();
+  renderQuickAccess();
+}
+
+function priorityScore(item, q){
+  const name = item.name.toLowerCase();
+  let score = 0;
+  if(name === q) score += 1000;
+  if(name.startsWith(q)) score += 500;
+  if(name.includes(q)) score += 100;
+  if(isFavorite(item.id)) score += 80;
+  if(recentIds.includes(item.id)) score += 40;
+  if(item.category === "Recette") score += 5;
+  return score;
+}
+
+function renderQuickAccess(){
+  const quick = document.getElementById("quickAccess");
+  const favBlock = document.getElementById("favoriteBlock");
+  const recentBlock = document.getElementById("recentBlock");
+  const favChips = document.getElementById("favoriteChips");
+  const recentChips = document.getElementById("recentChips");
+
+  const favItems = favoriteIds.map(itemById).filter(Boolean).slice(0,8);
+  const recentItems = recentIds.map(itemById).filter(Boolean).filter(x => !favoriteIds.includes(x.id)).slice(0,8);
+
+  favChips.innerHTML = favItems.map(item => `<button class="chip" data-id="${item.id}" type="button">⭐ ${item.name}</button>`).join("");
+  recentChips.innerHTML = recentItems.map(item => `<button class="chip" data-id="${item.id}" type="button">🕒 ${item.name}</button>`).join("");
+
+  favBlock.classList.toggle("hidden", favItems.length === 0);
+  recentBlock.classList.toggle("hidden", recentItems.length === 0);
+  quick.classList.toggle("hidden", favItems.length === 0 && recentItems.length === 0);
+}
+
 function photoOrPlaceholder(r){
   const emoji = r.category === "Aliment" ? "🍎" : "🍽️";
   return r.photo || `data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="180" height="120"><rect width="100%" height="100%" rx="14" fill="#ffe8ef"/><text x="50%" y="55%" text-anchor="middle" font-size="46">${emoji}</text></svg>`)}`;
@@ -133,6 +211,7 @@ function selectItem(id){
   hideSuggestions();
   updatePreview();
   calculate();
+  addRecent(id);
 }
 
 function calculate(){
@@ -151,6 +230,9 @@ function updatePreview(){
   document.getElementById("previewCarbs").textContent = `${String(r.carbs).replace(".", ",")} g de glucides nets / 100 g`;
   document.getElementById("previewCategory").textContent = r.category;
   document.getElementById("previewSource").textContent = r.source === "central" ? "Base centrale" : "Familial";
+  const favBtn = document.getElementById("favoriteToggle");
+  favBtn.textContent = isFavorite(r.id) ? "★ Favori" : "☆ Ajouter aux favoris";
+  favBtn.classList.toggle("active", isFavorite(r.id));
   box.classList.remove("hidden");
 }
 
@@ -168,9 +250,10 @@ function renderSuggestions(){
     return;
   }
 
-  const starts = sortedItems().filter(r => r.name.toLowerCase().startsWith(q));
-  const contains = sortedItems().filter(r => !r.name.toLowerCase().startsWith(q) && r.name.toLowerCase().includes(q));
-  const matches = [...starts, ...contains].slice(0,3);
+  const matches = sortedItems()
+    .filter(r => r.name.toLowerCase().includes(q))
+    .sort((a,b) => priorityScore(b,q) - priorityScore(a,q) || a.name.localeCompare(b.name,"fr",{sensitivity:"base"}))
+    .slice(0,3);
 
   if(matches.length === 0){
     box.innerHTML = `<button class="suggestion" type="button"><div><strong>Aucun résultat</strong><small>Essaie un autre mot.</small></div></button>`;
@@ -186,7 +269,7 @@ function renderSuggestions(){
       <img src="${photoOrPlaceholder(r)}" alt="">
       <div>
         <strong>${r.name}</strong>
-        <small>${r.category} · ${String(r.carbs).replace(".", ",")} g / 100 g</small>
+        <small>${r.category} · ${String(r.carbs).replace(".", ",")} g / 100 g ${isFavorite(r.id) ? '<span class="badge">⭐</span>' : ''}${recentIds.includes(r.id) ? '<span class="badge">🕒</span>' : ''}</small>
       </div>
     </button>
   `).join("");
@@ -235,7 +318,10 @@ function renderRecipes(){
         <strong>${r.name}</strong>
         <small>${r.category} · ${String(r.carbs).replace(".", ",")} g / 100 g · ${r.source === "central" ? "Base centrale" : "Familial"}</small>
       </div>
-      <div class="actions">${canEdit?`<button data-edit="${r.id}" title="Modifier">✏️</button><button data-delete="${r.id}" title="Supprimer">🗑️</button>`:""}</div>
+      <div class="actions">
+        <button data-fav="${r.id}" title="Favori">${isFavorite(r.id) ? "★" : "☆"}</button>
+        ${canEdit?`<button data-edit="${r.id}" title="Modifier">✏️</button><button data-delete="${r.id}" title="Supprimer">🗑️</button>`:""}
+      </div>
     `;
     list.appendChild(item);
   });
@@ -348,6 +434,7 @@ async function refreshAll(force=false){
   await loadCentralDatabase(force);
   mergeItems();
   renderRecipes();
+  renderQuickAccess();
   renderSuggestions();
   if(selectedItemId){
     updatePreview();
@@ -360,7 +447,9 @@ async function refreshAll(force=false){
 }
 
 document.addEventListener("DOMContentLoaded", async ()=>{
+  loadFavoritesAndRecents();
   await refreshAll(false);
+  renderQuickAccess();
   renderAdmin();
 
   document.getElementById("itemSearch").addEventListener("input", renderSuggestions);
@@ -376,6 +465,16 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   document.getElementById("suggestions").addEventListener("click", e=>{
     const btn = e.target.closest("[data-id]");
     if(btn) selectItem(btn.dataset.id);
+  });
+
+  document.getElementById("quickAccess").addEventListener("click", e=>{
+    const btn = e.target.closest("[data-id]");
+    if(btn) selectItem(btn.dataset.id);
+  });
+
+  document.getElementById("favoriteToggle").addEventListener("click",()=>{
+    const r = selectedItem();
+    if(r) toggleFavorite(r.id);
   });
 
   document.addEventListener("click", e=>{
@@ -475,6 +574,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   });
 
   document.getElementById("recipeList").addEventListener("click", e=>{
+    if(e.target.dataset.fav) toggleFavorite(e.target.dataset.fav);
     if(e.target.dataset.edit) editItem(e.target.dataset.edit);
     if(e.target.dataset.delete) deleteItem(e.target.dataset.delete);
   });

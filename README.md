@@ -1,10 +1,11 @@
-# Calcul glucides DT1 — Aide-mémoire + filtre alphabétique
+# Calcul glucides DT1 — Favoris, récents et recherche rapide
 
 ## Changements
-- Ajout d’un filtre par lettre dans l’onglet Registre.
-- L’onglet Calculer ne préremplit plus automatiquement un aliment au démarrage.
-- La recherche reste vide jusqu’au choix d’un aliment ou d’une recette.
-- Base Santé Canada et aide-mémoire conservés.
+- Favoris ⭐ accessibles dans l’onglet Calculer.
+- Historique des 10 derniers aliments/recettes utilisés 🕒.
+- Recherche améliorée : priorise les correspondances exactes, les débuts de mots, les favoris et les récents.
+- Étoile dans le Registre pour ajouter/retirer rapidement un favori.
+- Base Santé Canada, aide-mémoire, filtre alphabétique et bouton paramètres conservés.
 
 ## Mise à jour GitHub
 Téléverse le contenu de ce dossier à la racine du dépôt GitHub, puis Commit changes.
