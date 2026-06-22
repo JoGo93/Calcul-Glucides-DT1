@@ -1,4 +1,4 @@
-const CACHE = "calcul-glucides-dt1-cloud-db-v1";
+const CACHE = "calcul-glucides-dt1-cnf-canada-v1";
 const FILES = ["./","index.html","style.css","script.js","manifest.json","database.json"];
 self.addEventListener("install", e => {
   self.skipWaiting();

@@ -1,13 +1,19 @@
-# Calcul glucides DT1 — base centrale GitHub
+# Calcul glucides DT1 — Base Santé Canada
 
-## Principe
-L'application charge automatiquement la base commune depuis :
+## Contenu
+- 5685 aliments issus de la Base canadienne des éléments nutritifs 2015.
+- 11 recettes familiales seulement.
+- Les recettes génériques précédentes ont été retirées.
 
-database.json
+## Calcul
+Glucides nets par 100 g = glucides totaux - fibres alimentaires.
 
-Pour mettre à jour tous les utilisateurs, il suffit de remplacer ce fichier dans GitHub.
+Dans les fichiers CNF :
+- Glucides totaux : NutrientID 205
+- Fibres : NutrientID 291
 
-## Fichiers à mettre à la racine du dépôt
+## Mise à jour GitHub
+Téléverse le contenu de ce dossier à la racine du dépôt :
 - index.html
 - style.css
 - script.js
@@ -16,12 +22,8 @@ Pour mettre à jour tous les utilisateurs, il suffit de remplacer ce fichier dan
 - database.json
 - icons/
 
-## Mise à jour de la base
-1. Modifier ou remplacer database.json.
-2. Commit changes.
-3. Attendre 1 à 3 minutes.
-4. Dans l'application : Admin > Recharger la base centrale.
+Ensuite commit, attendre 1 à 3 minutes, puis dans l'application :
+Admin → Recharger la base centrale.
 
-## Données familiales
-Les éléments ajoutés depuis l'application restent locaux à l'appareil.
-Pour les rendre disponibles à tous, il faut les ajouter dans database.json.
+## Note de sécurité
+Les valeurs doivent être validées graduellement pour les aliments réellement utilisés avec votre enfant.
