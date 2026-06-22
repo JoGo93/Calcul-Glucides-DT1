@@ -67,8 +67,35 @@
         <button class="filter" data-filter="Recette">Recettes</button>
       </div>
 
+      <div class="letter-filter-wrap">
+        <label class="letter-label" for="letterFilter">Filtrer par lettre</label>
+        <select id="letterFilter" class="letter-filter">
+          <option value="Tous">Toutes les lettres</option>
+          <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+          <option value="D">D</option><option value="E">E</option><option value="F">F</option>
+          <option value="G">G</option><option value="H">H</option><option value="I">I</option>
+          <option value="J">J</option><option value="K">K</option><option value="L">L</option>
+          <option value="M">M</option><option value="N">N</option><option value="O">O</option>
+          <option value="P">P</option><option value="Q">Q</option><option value="R">R</option>
+          <option value="S">S</option><option value="T">T</option><option value="U">U</option>
+          <option value="V">V</option><option value="W">W</option><option value="X">X</option>
+          <option value="Y">Y</option><option value="Z">Z</option>
+        </select>
+      </div>
+
       <input id="searchRecipe" class="search" placeholder="Rechercher...">
       <div id="recipeList" class="list"></div>
+    </section>
+
+    <section id="screen-help" class="screen">
+      <header class="top small">
+        <h1>Aide-mémoire</h1>
+        <p>Qu’est-ce qui fait monter la glycémie?</p>
+      </header>
+
+      <div class="help-card">
+        <img src="assets/aide-memoire-diabetes.jpeg" alt="Aide-mémoire diabète et glycémie">
+      </div>
     </section>
 
     <section id="screen-admin" class="screen">
@@ -137,10 +164,12 @@
     </section>
   </main>
 
+  <button id="floatingAdminBtn" class="floating-admin" aria-label="Paramètres">⚙️</button>
+
   <nav class="tabs">
     <button data-tab="calc" class="active">🏠<span>Calculer</span></button>
     <button data-tab="recipes">📋<span>Registre</span></button>
-    <button data-tab="admin">⚙️<span>Admin</span></button>
+    <button data-tab="help">🧠<span>Aide-mémoire</span></button>
   </nav>
 
   <script src="script.js"></script>

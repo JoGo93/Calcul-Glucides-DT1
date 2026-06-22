@@ -42,3 +42,57 @@ button.primary,button.secondary{width:100%;border:0;border-radius:14px;padding:1
 .hidden{display:none!important}.photo-preview{width:100%;max-height:220px;object-fit:cover;border-radius:16px;margin-top:10px;border:1px solid #eee}
 .import-label{margin-top:18px!important}
 @media (min-width:700px){body{background:#fafafa}.app{background:#fff;min-height:100vh}}
+
+
+.help-card{
+  background:#fff;
+  border:1px solid #eee;
+  border-radius:22px;
+  padding:10px;
+  box-shadow:0 4px 24px rgba(0,0,0,.08);
+}
+.help-card img{
+  width:100%;
+  height:auto;
+  display:block;
+  border-radius:16px;
+}
+.floating-admin{
+  position:fixed;
+  right:18px;
+  bottom:calc(84px + env(safe-area-inset-bottom));
+  width:56px;
+  height:56px;
+  border-radius:18px;
+  border:1px solid #d9dce3;
+  background:#ffffff;
+  box-shadow:0 8px 24px rgba(0,0,0,.18);
+  z-index:20;
+  font-size:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.floating-admin:active{
+  transform:scale(.97);
+}
+
+
+.letter-filter-wrap{
+  margin:0 0 14px;
+}
+.letter-label{
+  display:block;
+  font-size:14px;
+  font-weight:800;
+  color:#555;
+  margin:0 0 7px 4px;
+}
+.letter-filter{
+  width:100%;
+  border:1px solid #e6e8ee;
+  background:#f7f7f9;
+  border-radius:16px;
+  padding:14px 16px;
+  font-size:17px;
+}

@@ -1,5 +1,5 @@
-const CACHE = "calcul-glucides-dt1-cnf-canada-v1";
-const FILES = ["./","index.html","style.css","script.js","manifest.json","database.json"];
+const CACHE = "calcul-glucides-dt1-aide-memoire-alpha-v1";
+const FILES = ["./","index.html","style.css","script.js","manifest.json","database.json","assets/aide-memoire-diabetes.jpeg"];
 self.addEventListener("install", e => {
   self.skipWaiting();
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
@@ -9,7 +9,7 @@ self.addEventListener("activate", e => {
   self.clients.claim();
 });
 self.addEventListener("fetch", e => {
-  if(e.request.url.includes("database.json")){
+  if(e.request.url.includes("database.json","assets/aide-memoire-diabetes.jpeg")){
     e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
     return;
   }

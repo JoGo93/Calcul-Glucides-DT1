@@ -18,6 +18,7 @@ let items = [];
 let selectedItemId = "";
 let currentPhotoData = "";
 let currentFilter = "Tous";
+let currentLetterFilter = "Tous";
 
 function normalizeItem(r, idx=0, source="local"){
   return {
@@ -196,6 +197,17 @@ function hideSuggestions(){
   document.getElementById("suggestions").classList.add("hidden");
 }
 
+
+function firstLetterNormalized(text){
+  const normalized = (text || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toUpperCase();
+  const first = normalized.charAt(0);
+  return /^[A-Z]$/.test(first) ? first : "#";
+}
+
 function renderRecipes(){
   const q = document.getElementById("searchRecipe").value.toLowerCase();
   const list = document.getElementById("recipeList");
@@ -204,7 +216,8 @@ function renderRecipes(){
   const filtered = sortedItems().filter(r => {
     const matchesSearch = r.name.toLowerCase().includes(q);
     const matchesFilter = currentFilter === "Tous" || r.category === currentFilter;
-    return matchesSearch && matchesFilter;
+    const matchesLetter = currentLetterFilter === "Tous" || firstLetterNormalized(r.name) === currentLetterFilter;
+    return matchesSearch && matchesFilter && matchesLetter;
   });
 
   if(filtered.length === 0){
@@ -336,10 +349,11 @@ async function refreshAll(force=false){
   mergeItems();
   renderRecipes();
   renderSuggestions();
-  if(!selectedItemId){
-    const first = sortedItems()[0];
-    if(first) selectItem(first.id);
+  if(selectedItemId){
+    updatePreview();
+    calculate();
   } else {
+    document.getElementById("itemSearch").value = "";
     updatePreview();
     calculate();
   }
@@ -354,6 +368,11 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   document.getElementById("portionWeight").addEventListener("input", calculate);
   document.getElementById("searchRecipe").addEventListener("input", renderRecipes);
 
+  document.getElementById("letterFilter").addEventListener("change", e=>{
+    currentLetterFilter = e.target.value;
+    renderRecipes();
+  });
+
   document.getElementById("suggestions").addEventListener("click", e=>{
     const btn = e.target.closest("[data-id]");
     if(btn) selectItem(btn.dataset.id);
@@ -364,6 +383,10 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   });
 
   document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.tab)));
+
+  document.getElementById("floatingAdminBtn").addEventListener("click",()=>{
+    setTab("admin");
+  });
 
   document.querySelectorAll(".filter").forEach(btn=>{
     btn.addEventListener("click",()=>{
