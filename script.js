@@ -177,21 +177,7 @@ function priorityScore(item, q){
 }
 
 function renderQuickAccess(){
-  const quick = document.getElementById("quickAccess");
-  const favBlock = document.getElementById("favoriteBlock");
-  const recentBlock = document.getElementById("recentBlock");
-  const favChips = document.getElementById("favoriteChips");
-  const recentChips = document.getElementById("recentChips");
-
-  const favItems = favoriteIds.map(itemById).filter(Boolean).slice(0,8);
-  const recentItems = recentIds.map(itemById).filter(Boolean).filter(x => !favoriteIds.includes(x.id)).slice(0,8);
-
-  favChips.innerHTML = favItems.map(item => `<button class="chip" data-id="${item.id}" type="button">⭐ ${item.name}</button>`).join("");
-  recentChips.innerHTML = recentItems.map(item => `<button class="chip" data-id="${item.id}" type="button">🕒 ${item.name}</button>`).join("");
-
-  favBlock.classList.toggle("hidden", favItems.length === 0);
-  recentBlock.classList.toggle("hidden", recentItems.length === 0);
-  quick.classList.toggle("hidden", favItems.length === 0 && recentItems.length === 0);
+  // Favoris visibles uniquement dans le filtre Favoris du registre.
 }
 
 function photoOrPlaceholder(r){
@@ -298,7 +284,7 @@ function renderRecipes(){
 
   const filtered = sortedItems().filter(r => {
     const matchesSearch = r.name.toLowerCase().includes(q);
-    const matchesFilter = currentFilter === "Tous" || r.category === currentFilter;
+    const matchesFilter = currentFilter === "Tous" || r.category === currentFilter || (currentFilter === "Favoris" && isFavorite(r.id));
     const matchesLetter = currentLetterFilter === "Tous" || firstLetterNormalized(r.name) === currentLetterFilter;
     return matchesSearch && matchesFilter && matchesLetter;
   });
@@ -463,11 +449,6 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   });
 
   document.getElementById("suggestions").addEventListener("click", e=>{
-    const btn = e.target.closest("[data-id]");
-    if(btn) selectItem(btn.dataset.id);
-  });
-
-  document.getElementById("quickAccess").addEventListener("click", e=>{
     const btn = e.target.closest("[data-id]");
     if(btn) selectItem(btn.dataset.id);
   });

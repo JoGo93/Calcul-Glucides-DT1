@@ -106,3 +106,10 @@ button.primary,button.secondary{width:100%;border:0;border-radius:14px;padding:1
 .favorite-toggle{display:inline-block;border:0;border-radius:999px;background:#fff0f4;color:#a41646;padding:7px 11px;font-size:13px;font-weight:850;margin-top:8px;}
 .favorite-toggle.active{background:#ffe08a;color:#6b4b00;}
 .suggestion .badge{display:inline-block;margin-left:4px;font-size:12px;}
+
+
+.filter-row .filter{
+  min-width:0;
+  padding-left:8px;
+  padding-right:8px;
+}

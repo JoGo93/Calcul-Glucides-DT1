@@ -1,11 +1,11 @@
-# Calcul glucides DT1 — Favoris, récents et recherche rapide
+# Calcul glucides DT1 — Favoris dans le registre
 
 ## Changements
-- Favoris ⭐ accessibles dans l’onglet Calculer.
-- Historique des 10 derniers aliments/recettes utilisés 🕒.
-- Recherche améliorée : priorise les correspondances exactes, les débuts de mots, les favoris et les récents.
-- Étoile dans le Registre pour ajouter/retirer rapidement un favori.
-- Base Santé Canada, aide-mémoire, filtre alphabétique et bouton paramètres conservés.
+- Les favoris ne s’affichent plus sous la barre de recherche dans l’onglet Calculer.
+- Les favoris restent prioritaires dans les suggestions de recherche.
+- Ajout du filtre Favoris dans l’onglet Registre.
+- Étoile dans le Registre pour ajouter/retirer un favori.
+- Historique récent conservé en arrière-plan pour améliorer les suggestions.
 
 ## Mise à jour GitHub
 Téléverse le contenu de ce dossier à la racine du dépôt GitHub, puis Commit changes.
