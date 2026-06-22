@@ -1,5 +1,5 @@
-const CACHE = "calcul-glucides-dt1-categories-v1";
-const FILES = ["./","index.html","style.css","script.js","manifest.json"];
+const CACHE = "calcul-glucides-dt1-cloud-db-v1";
+const FILES = ["./","index.html","style.css","script.js","manifest.json","database.json"];
 self.addEventListener("install", e => {
   self.skipWaiting();
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
@@ -8,4 +8,10 @@ self.addEventListener("activate", e => {
   e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))));
   self.clients.claim();
 });
-self.addEventListener("fetch", e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
+self.addEventListener("fetch", e => {
+  if(e.request.url.includes("database.json")){
+    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+    return;
+  }
+  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+});

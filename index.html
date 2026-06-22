@@ -16,9 +16,12 @@
         <p>Simple et rapide 💗</p>
       </header>
 
-      <div class="field-block">
-        <div class="label-row"><span class="icon">🍲</span><label for="recipeSelect">Aliment / recette:</label></div>
-        <select id="recipeSelect"></select>
+      <div class="sync-status" id="syncStatus">Chargement de la base...</div>
+
+      <div class="field-block search-block">
+        <div class="label-row"><span class="icon">🔎</span><label for="itemSearch">Rechercher:</label></div>
+        <input id="itemSearch" autocomplete="off" placeholder="Ex. banane, pâté, yogourt...">
+        <div id="suggestions" class="suggestions hidden"></div>
       </div>
 
       <div id="recipePreview" class="preview hidden">
@@ -27,6 +30,7 @@
           <strong id="previewName"></strong>
           <small id="previewCarbs"></small>
           <span id="previewCategory" class="pill"></span>
+          <span id="previewSource" class="pill source-pill"></span>
         </div>
       </div>
 
@@ -75,15 +79,15 @@
 
       <div id="lockedPanel" class="card">
         <h2>Accès administrateur</h2>
-        <p>Entre le code pour ajouter, modifier ou supprimer des éléments.</p>
-        <input id="adminPin" type="password" inputmode="numeric" placeholder="Code admin">
+        <p>Entre le code administrateur pour ajouter, modifier ou supprimer des éléments familiaux.</p>
+        <input id="adminPin" type="password" inputmode="numeric" placeholder="Code administrateur">
         <button id="unlockBtn" class="primary">Déverrouiller</button>
-        <small>Code par défaut : 1234.</small>
       </div>
 
       <div id="adminPanel" class="hidden">
         <div class="card">
-          <h2>Ajouter / modifier</h2>
+          <h2>Ajouter / modifier un élément familial</h2>
+          <p>Ces éléments sont enregistrés sur cet appareil. Pour les partager à tous, exporte-les puis ajoute-les dans database.json.</p>
           <input id="recipeId" type="hidden">
 
           <label>Catégorie</label>
@@ -107,9 +111,15 @@
         </div>
 
         <div class="card">
-          <h2>Sauvegarde</h2>
-          <button id="exportBtn" class="secondary">Exporter la banque</button>
-          <label class="import-label" for="importFile">Importer une sauvegarde</label>
+          <h2>Base centrale</h2>
+          <p>La base commune est chargée depuis <strong>database.json</strong> sur GitHub. Pour mettre à jour tous les utilisateurs, remplace ce fichier dans le dépôt.</p>
+          <button id="forceSyncBtn" class="secondary">Recharger la base centrale</button>
+        </div>
+
+        <div class="card">
+          <h2>Sauvegarde locale</h2>
+          <button id="exportBtn" class="secondary">Exporter mes éléments familiaux</button>
+          <label class="import-label" for="importFile">Importer des éléments familiaux</label>
           <input id="importFile" type="file" accept="application/json,.json">
         </div>
 
