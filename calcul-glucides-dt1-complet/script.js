@@ -1,0 +1,20 @@
+const DEFAULT_RECIPES=[
+ {id:'pate-chinois',name:'Pâté chinois aux patates douces',carbsPer100g:7.8,image:''},
+ {id:'salade-macaronis',name:'Salade de macaronis',carbsPer100g:21,image:''},
+ {id:'poulet-alfredo',name:'Poulet brocoli sauce Alfredo',carbsPer100g:3,image:''},
+ {id:'crepe-cottage',name:'Crêpe au fromage cottage',carbsPer100g:7,image:''},
+ {id:'pain-bananes-proteine',name:'Pain aux bananes protéiné',carbsPer100g:11,image:''},
+ {id:'yogourt-nature-2',name:'Yogourt nature 2 %',carbsPer100g:4.5,image:''}
+];
+const $=s=>document.querySelector(s);let recipes=loadRecipes();let decimals=Number(localStorage.getItem('decimals')??1);
+function loadRecipes(){try{return JSON.parse(localStorage.getItem('recipesDT1'))||DEFAULT_RECIPES}catch{return DEFAULT_RECIPES}}
+function saveRecipes(){localStorage.setItem('recipesDT1',JSON.stringify(recipes));renderAll()}
+function calc(){const id=$('#recipeSelect').value;const r=recipes.find(x=>x.id===id);const w=Number($('#portionWeight').value||0);const val=r?w*r.carbsPer100g/100:0;$('#resultValue').textContent=`${val.toFixed(decimals)} g`}
+function renderSelect(){const sel=$('#recipeSelect');sel.innerHTML=recipes.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');calc()}
+function renderList(){const q=$('#searchRecipe').value?.toLowerCase()||'';$('#recipeList').innerHTML=recipes.filter(r=>r.name.toLowerCase().includes(q)).map(r=>`<div class="recipe-item"><img class="thumb" src="${r.image||'icons/icon-192.png'}" onerror="this.src='icons/icon-192.png'"><div class="recipe-main"><b>${r.name}</b><small>${r.carbsPer100g} g de glucides nets / 100 g</small></div><div class="recipe-actions"><button onclick="editRecipe('${r.id}')">✎</button><button onclick="deleteRecipe('${r.id}')">🗑</button></div></div>`).join('')}
+function renderAll(){renderSelect();renderList()}
+function openRecipeDialog(recipe){$('#dialogTitle').textContent=recipe?'Modifier la recette':'Ajouter une recette';$('#recipeId').value=recipe?.id||'';$('#recipeName').value=recipe?.name||'';$('#recipeCarbs').value=recipe?.carbsPer100g??'';$('#recipeImage').value=recipe?.image||'';$('#recipeDialog').showModal()}
+function editRecipe(id){openRecipeDialog(recipes.find(r=>r.id===id))}
+function deleteRecipe(id){if(confirm('Supprimer cette recette?')){recipes=recipes.filter(r=>r.id!==id);saveRecipes()}}
+function setup(){document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tabs button,.screen').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(`#screen-${b.dataset.tab}`).classList.add('active')}));$('#portionWeight').addEventListener('input',calc);$('#recipeSelect').addEventListener('change',calc);$('#searchRecipe').addEventListener('input',renderList);$('#addRecipeBtn').addEventListener('click',()=>openRecipeDialog());$('#cancelDialog').addEventListener('click',()=>$('#recipeDialog').close());$('#recipeForm').addEventListener('submit',e=>{e.preventDefault();const id=$('#recipeId').value||crypto.randomUUID();const rec={id,name:$('#recipeName').value.trim(),carbsPer100g:Number($('#recipeCarbs').value),image:$('#recipeImage').value.trim()};recipes=recipes.filter(r=>r.id!==id).concat(rec).sort((a,b)=>a.name.localeCompare(b.name));saveRecipes();$('#recipeDialog').close()});$('#decimalSelect').value=decimals;$('#decimalSelect').addEventListener('change',e=>{decimals=Number(e.target.value);localStorage.setItem('decimals',decimals);calc()});$('#resetBtn').addEventListener('click',()=>{if(confirm('Réinitialiser toutes les recettes?')){recipes=[...DEFAULT_RECIPES];saveRecipes()}});$('#exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(recipes,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='recettes-glucides-dt1.json';a.click()});$('#importBtn').addEventListener('click',()=>$('#importFile').click());$('#importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;recipes=JSON.parse(await f.text());saveRecipes()});renderAll();if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js')}
+setup();
