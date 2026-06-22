@@ -17,7 +17,7 @@
       </header>
 
       <div class="field-block">
-        <div class="label-row"><span class="icon">🍲</span><label for="recipeSelect">Recette:</label></div>
+        <div class="label-row"><span class="icon">🍲</span><label for="recipeSelect">Aliment / recette:</label></div>
         <select id="recipeSelect"></select>
       </div>
 
@@ -26,6 +26,7 @@
         <div>
           <strong id="previewName"></strong>
           <small id="previewCarbs"></small>
+          <span id="previewCategory" class="pill"></span>
         </div>
       </div>
 
@@ -47,15 +48,22 @@
         <div class="result-sub">de glucides nets</div>
       </div>
 
-      <div class="notice">ℹ️ Calcul indicatif. Les valeurs sont basées sur les glucides nets par 100 g. Le résultat est toujours arrondi à la baisse.</div>
+      <div class="notice">ℹ️ Calcul indicatif. Résultat toujours arrondi à la baisse.</div>
     </section>
 
     <section id="screen-recipes" class="screen">
       <header class="top small">
-        <h1>Recettes</h1>
-        <p>Base de données locale</p>
+        <h1>Registre</h1>
+        <p>Aliments et recettes</p>
       </header>
-      <input id="searchRecipe" class="search" placeholder="Rechercher une recette...">
+
+      <div class="filter-row">
+        <button class="filter active" data-filter="Tous">Tous</button>
+        <button class="filter" data-filter="Aliment">Aliments</button>
+        <button class="filter" data-filter="Recette">Recettes</button>
+      </div>
+
+      <input id="searchRecipe" class="search" placeholder="Rechercher...">
       <div id="recipeList" class="list"></div>
     </section>
 
@@ -67,35 +75,40 @@
 
       <div id="lockedPanel" class="card">
         <h2>Accès administrateur</h2>
-        <p>Entre le code pour ajouter, modifier ou supprimer des recettes.</p>
+        <p>Entre le code pour ajouter, modifier ou supprimer des éléments.</p>
         <input id="adminPin" type="password" inputmode="numeric" placeholder="Code admin">
         <button id="unlockBtn" class="primary">Déverrouiller</button>
-        <small>Code par défaut : 1234. Change-le après la première connexion.</small>
+        <small>Code par défaut : 1234.</small>
       </div>
 
       <div id="adminPanel" class="hidden">
         <div class="card">
-          <h2>Ajouter / modifier une recette</h2>
+          <h2>Ajouter / modifier</h2>
           <input id="recipeId" type="hidden">
 
-          <label>Nom de la recette</label>
-          <input id="recipeName" placeholder="Ex. Pâté chinois">
+          <label>Catégorie</label>
+          <select id="recipeCategory">
+            <option value="Aliment">Aliment</option>
+            <option value="Recette">Recette</option>
+          </select>
+
+          <label>Nom</label>
+          <input id="recipeName" placeholder="Ex. Fraises ou Pâté chinois">
 
           <label>Glucides nets / 100 g</label>
           <input id="recipeCarbs" type="number" inputmode="decimal" step="0.1" placeholder="Ex. 7.8">
 
-          <label>Photo</label>
-          <input id="recipePhoto" type="file" accept="image/*" capture="environment">
+          <label>Photo depuis l’iPhone</label>
+          <input id="recipePhoto" type="file" accept="image/*">
           <img id="photoPreview" class="photo-preview hidden" alt="">
 
-          <button id="saveRecipeBtn" class="primary">Enregistrer la recette</button>
+          <button id="saveRecipeBtn" class="primary">Enregistrer</button>
           <button id="cancelEditBtn" class="secondary hidden">Annuler la modification</button>
         </div>
 
         <div class="card">
-          <h2>Sauvegarde des recettes</h2>
-          <p>Exporte régulièrement ta banque de recettes pour pouvoir la restaurer sur un autre téléphone ou en cas de problème.</p>
-          <button id="exportBtn" class="secondary">Exporter la banque de recettes</button>
+          <h2>Sauvegarde</h2>
+          <button id="exportBtn" class="secondary">Exporter la banque</button>
           <label class="import-label" for="importFile">Importer une sauvegarde</label>
           <input id="importFile" type="file" accept="application/json,.json">
         </div>
@@ -108,7 +121,6 @@
 
         <div class="card">
           <h2>Verrouillage</h2>
-          <p>Verrouille les paramètres après avoir terminé les modifications.</p>
           <button id="lockBtn" class="secondary">Verrouiller les paramètres</button>
         </div>
       </div>
@@ -117,7 +129,7 @@
 
   <nav class="tabs">
     <button data-tab="calc" class="active">🏠<span>Calculer</span></button>
-    <button data-tab="recipes">📋<span>Recettes</span></button>
+    <button data-tab="recipes">📋<span>Registre</span></button>
     <button data-tab="admin">⚙️<span>Admin</span></button>
   </nav>
 

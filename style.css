@@ -1,6 +1,6 @@
 :root{
   --pink:#f45b8a; --pink2:#ffe8ef; --dark:#11172b; --muted:#7b8190;
-  --green:#2e8b2f; --greenBg:#eff9ed; --border:#ffd0dc; --card:#fff;
+  --green:#2e8b2f; --greenBg:#eff9ed;
 }
 *{box-sizing:border-box}
 html,body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:#fff;color:var(--dark)}
@@ -11,8 +11,8 @@ h1{font-size:34px;margin:0;font-weight:800}.top p{font-size:20px;margin:8px 0 0;
 .field-block{margin:0 0 34px}
 .label-row,.result-label{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .icon{width:46px;height:46px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--pink2);font-size:23px;flex:0 0 46px}
-label,.label-row label{font-size:26px;font-weight:800}
-select,input{width:100%;border:2px solid #ff9ab8;border-radius:18px;padding:18px 18px;font-size:22px;background:#fff;color:var(--dark);outline:none}
+label,.label-row label{font-size:25px;font-weight:800}
+select,input{width:100%;border:2px solid #ff9ab8;border-radius:18px;padding:18px;font-size:22px;background:#fff;color:var(--dark);outline:none}
 .input-unit{position:relative}.input-unit input{padding-right:60px}.input-unit span{position:absolute;right:22px;top:18px;font-size:22px;color:var(--muted)}
 .result-label h2{font-size:26px;line-height:1.2;margin:0;font-weight:850}
 .result-card{border:2px solid #9fd19b;background:var(--greenBg);border-radius:20px;text-align:center;padding:34px 10px;margin:18px 0 28px}
@@ -22,15 +22,19 @@ select,input{width:100%;border:2px solid #ff9ab8;border-radius:18px;padding:18px
 .tabs button{border:0;background:transparent;color:#8a8e99;font-size:24px;width:33%;max-width:170px;padding:6px 0}.tabs button span{display:block;font-size:13px;margin-top:3px}.tabs button.active{color:var(--pink);font-weight:700}
 .preview{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid #eee;border-radius:18px;padding:12px;margin:-20px 0 30px}
 .preview img{width:80px;height:65px;object-fit:cover;border-radius:14px}.preview strong{display:block;font-size:18px}.preview small{display:block;color:var(--muted);margin-top:5px}
+.pill{display:inline-block;margin-top:6px;background:#f2f3f6;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800;color:#555}
 .search{border-color:#eee;background:#f7f7f9;font-size:17px;margin-bottom:18px}
+.filter-row{display:flex;gap:8px;margin-bottom:14px}
+.filter{flex:1;border:0;border-radius:999px;padding:12px;background:#f2f3f6;color:#555;font-size:15px;font-weight:800}
+.filter.active{background:var(--pink);color:#fff}
 .recipe-item{display:flex;gap:14px;align-items:center;padding:12px;border-bottom:1px solid #eee;background:#fff}
-.recipe-item img{width:82px;height:64px;object-fit:cover;border-radius:12px;background:#f1f1f1}.recipe-item .info{flex:1}.recipe-item strong{display:block;font-size:18px}.recipe-item small{color:var(--muted)}
+.recipe-item img{width:82px;height:64px;object-fit:cover;border-radius:12px;background:#f1f1f1}.recipe-item .info{flex:1}.recipe-item strong{display:block;font-size:18px}.recipe-item small{color:var(--muted);display:block;margin-top:4px}
 .recipe-item .actions{display:flex;gap:8px}.recipe-item button{border:0;border-radius:10px;padding:10px;background:#f3f4f6;color:#333}
 .card{background:#fff;border:1px solid #eee;border-radius:18px;padding:18px;margin:18px 0;box-shadow:0 3px 20px rgba(0,0,0,.04)}
 .card h2{margin:0 0 12px;font-size:20px}.card p,.card small{color:#656b77;line-height:1.4}.card label{display:block;font-size:15px;font-weight:700;margin:14px 0 7px}
-.card input{font-size:18px;border-color:#e6e8ee;border-radius:13px;padding:14px}
-button.primary,button.secondary,button.danger-btn{width:100%;border:0;border-radius:14px;padding:15px;margin-top:14px;font-size:17px;font-weight:800}
-.primary{background:var(--pink);color:#fff}.secondary{background:#f2f3f6;color:#333}.danger-btn{background:#ffd6df;color:#d7194f}.danger{background:#fff8fa}
+.card input,.card select{font-size:18px;border-color:#e6e8ee;border-radius:13px;padding:14px}
+button.primary,button.secondary{width:100%;border:0;border-radius:14px;padding:15px;margin-top:14px;font-size:17px;font-weight:800}
+.primary{background:var(--pink);color:#fff}.secondary{background:#f2f3f6;color:#333}
 .hidden{display:none!important}.photo-preview{width:100%;max-height:220px;object-fit:cover;border-radius:16px;margin-top:10px;border:1px solid #eee}
 .import-label{margin-top:18px!important}
 @media (min-width:700px){body{background:#fafafa}.app{background:#fff;min-height:100vh}}

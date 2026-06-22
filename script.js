@@ -1,74 +1,83 @@
-const DEFAULT_RECIPES = [
-  {id:"pate", name:"Pâté chinois aux patates douces", carbs:7.8, photo:""},
-  {id:"macaroni", name:"Salade de macaronis", carbs:21, photo:""},
-  {id:"alfredo", name:"Poulet brocoli sauce Alfredo", carbs:3, photo:""},
-  {id:"crepe", name:"Crêpe cottage", carbs:7, photo:""},
-  {id:"banane", name:"Pain aux bananes protéiné", carbs:11, photo:""},
-  {id:"pudding", name:"Pudding santé", carbs:9, photo:""}
+const DEFAULT_ITEMS = [
+  {id:"pate", name:"Pâté chinois aux patates douces", carbs:7.8, category:"Recette", photo:""},
+  {id:"macaroni", name:"Salade de macaronis", carbs:21, category:"Recette", photo:""},
+  {id:"alfredo", name:"Poulet brocoli sauce Alfredo", carbs:3, category:"Recette", photo:""},
+  {id:"crepe", name:"Crêpe cottage", carbs:7, category:"Recette", photo:""},
+  {id:"banane-pain", name:"Pain aux bananes protéiné", carbs:11, category:"Recette", photo:""},
+  {id:"pudding", name:"Pudding santé", carbs:9, category:"Recette", photo:""},
+  {id:"fraise", name:"Fraises", carbs:5.7, category:"Aliment", photo:""},
+  {id:"bleuet", name:"Bleuets", carbs:12.1, category:"Aliment", photo:""},
+  {id:"banane", name:"Banane", carbs:20.2, category:"Aliment", photo:""},
+  {id:"brocoli", name:"Brocoli cuit", carbs:4, category:"Aliment", photo:""}
 ];
 
-const LS_RECIPES = "dt1_recipes_v3_secure";
+const LS_RECIPES = "dt1_items_v4_categories";
 const LS_PIN = "dt1_admin_pin";
 const LS_ADMIN = "dt1_admin_unlocked";
 
-let recipes = [];
+let items = [];
 let currentPhotoData = "";
+let currentFilter = "Tous";
 
-function loadRecipes(){
+function normalizeItem(r, idx=0){
+  return {
+    id: r.id || `item_${Date.now()}_${idx}`,
+    name: String(r.name || r.nom || "").trim(),
+    carbs: Number(r.carbs ?? r.glucides ?? r.glucidesNets100g),
+    category: (r.category === "Aliment" || r.category === "Recette") ? r.category : "Recette",
+    photo: r.photo || ""
+  };
+}
+
+function loadItems(){
   const saved = localStorage.getItem(LS_RECIPES);
-  recipes = saved ? JSON.parse(saved) : DEFAULT_RECIPES;
-  saveRecipes();
+  items = saved ? JSON.parse(saved).map(normalizeItem).filter(x=>x.name && !isNaN(x.carbs)) : DEFAULT_ITEMS;
+  saveItems();
 }
 
-function saveRecipes(){
-  localStorage.setItem(LS_RECIPES, JSON.stringify(recipes));
-}
-
-function getPin(){
-  return localStorage.getItem(LS_PIN) || "1234";
-}
-
-function isAdmin(){
-  return sessionStorage.getItem(LS_ADMIN) === "1";
-}
+function saveItems(){ localStorage.setItem(LS_RECIPES, JSON.stringify(items)); }
+function getPin(){ return localStorage.getItem(LS_PIN) || "1234"; }
+function isAdmin(){ return sessionStorage.getItem(LS_ADMIN) === "1"; }
+function sortedItems(list=items){ return [...list].sort((a,b)=>a.name.localeCompare(b.name,"fr",{sensitivity:"base"})); }
 
 function photoOrPlaceholder(r){
-  return r.photo || `data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="180" height="120"><rect width="100%" height="100%" rx="14" fill="#ffe8ef"/><text x="50%" y="55%" text-anchor="middle" font-size="46">🍽️</text></svg>`)}`;
+  const emoji = r.category === "Aliment" ? "🍎" : "🍽️";
+  return r.photo || `data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="180" height="120"><rect width="100%" height="100%" rx="14" fill="#ffe8ef"/><text x="50%" y="55%" text-anchor="middle" font-size="46">${emoji}</text></svg>`)}`;
 }
 
 function renderSelect(){
   const select = document.getElementById("recipeSelect");
   select.innerHTML = "";
-  recipes.sort((a,b)=>a.name.localeCompare(b.name,"fr"));
-  for(const r of recipes){
+  for(const r of sortedItems()){
     const opt = document.createElement("option");
     opt.value = r.id;
-    opt.textContent = r.name;
+    opt.textContent = `${r.name} · ${r.category}`;
     select.appendChild(opt);
   }
   updatePreview();
   calculate();
 }
 
-function selectedRecipe(){
+function selectedItem(){
   const id = document.getElementById("recipeSelect").value;
-  return recipes.find(r=>r.id===id) || recipes[0];
+  return items.find(r=>r.id===id) || sortedItems()[0];
 }
 
 function calculate(){
-  const r = selectedRecipe();
+  const r = selectedItem();
   const weight = parseFloat(document.getElementById("portionWeight").value) || 0;
   const carbs = r ? Math.floor((weight * Number(r.carbs)) / 100) : 0;
   document.getElementById("carbResult").textContent = `${carbs} g`;
 }
 
 function updatePreview(){
-  const r = selectedRecipe();
+  const r = selectedItem();
   const box = document.getElementById("recipePreview");
   if(!r){ box.classList.add("hidden"); return; }
   document.getElementById("previewImg").src = photoOrPlaceholder(r);
   document.getElementById("previewName").textContent = r.name;
   document.getElementById("previewCarbs").textContent = `${String(r.carbs).replace(".", ",")} g de glucides nets / 100 g`;
+  document.getElementById("previewCategory").textContent = r.category;
   box.classList.remove("hidden");
 }
 
@@ -76,19 +85,31 @@ function renderRecipes(){
   const q = document.getElementById("searchRecipe").value.toLowerCase();
   const list = document.getElementById("recipeList");
   list.innerHTML = "";
-  recipes
-    .filter(r=>r.name.toLowerCase().includes(q))
-    .sort((a,b)=>a.name.localeCompare(b.name,"fr"))
-    .forEach(r=>{
-      const item = document.createElement("div");
-      item.className = "recipe-item";
-      item.innerHTML = `
-        <img src="${photoOrPlaceholder(r)}" alt="">
-        <div class="info"><strong>${r.name}</strong><small>${String(r.carbs).replace(".", ",")} g / 100 g</small></div>
-        <div class="actions">${isAdmin()?`<button data-edit="${r.id}" title="Modifier">✏️</button><button data-delete="${r.id}" title="Supprimer">🗑️</button>`:""}</div>
-      `;
-      list.appendChild(item);
-    });
+
+  const filtered = sortedItems().filter(r => {
+    const matchesSearch = r.name.toLowerCase().includes(q);
+    const matchesFilter = currentFilter === "Tous" || r.category === currentFilter;
+    return matchesSearch && matchesFilter;
+  });
+
+  if(filtered.length === 0){
+    list.innerHTML = `<div class="notice">Aucun élément trouvé.</div>`;
+    return;
+  }
+
+  filtered.forEach(r=>{
+    const item = document.createElement("div");
+    item.className = "recipe-item";
+    item.innerHTML = `
+      <img src="${photoOrPlaceholder(r)}" alt="">
+      <div class="info">
+        <strong>${r.name}</strong>
+        <small>${r.category} · ${String(r.carbs).replace(".", ",")} g / 100 g</small>
+      </div>
+      <div class="actions">${isAdmin()?`<button data-edit="${r.id}" title="Modifier">✏️</button><button data-delete="${r.id}" title="Supprimer">🗑️</button>`:""}</div>
+    `;
+    list.appendChild(item);
+  });
 }
 
 function setTab(tab){
@@ -105,11 +126,11 @@ function renderAdmin(){
   document.getElementById("lockedPanel").classList.toggle("hidden", unlocked);
   document.getElementById("adminPanel").classList.toggle("hidden", !unlocked);
   document.getElementById("adminStatus").textContent = unlocked ? "Mode administrateur déverrouillé" : "Mode protégé";
-  renderRecipes();
 }
 
 function clearForm(){
   document.getElementById("recipeId").value="";
+  document.getElementById("recipeCategory").value="Aliment";
   document.getElementById("recipeName").value="";
   document.getElementById("recipeCarbs").value="";
   document.getElementById("recipePhoto").value="";
@@ -118,11 +139,12 @@ function clearForm(){
   document.getElementById("cancelEditBtn").classList.add("hidden");
 }
 
-function editRecipe(id){
-  const r = recipes.find(x=>x.id===id);
+function editItem(id){
+  const r = items.find(x=>x.id===id);
   if(!r || !isAdmin()) return;
   setTab("admin");
   document.getElementById("recipeId").value = r.id;
+  document.getElementById("recipeCategory").value = r.category || "Recette";
   document.getElementById("recipeName").value = r.name;
   document.getElementById("recipeCarbs").value = r.carbs;
   currentPhotoData = r.photo || "";
@@ -135,73 +157,54 @@ function editRecipe(id){
   document.getElementById("cancelEditBtn").classList.remove("hidden");
 }
 
-function deleteRecipe(id){
+function deleteItem(id){
   if(!isAdmin()) return;
-  const r = recipes.find(x=>x.id===id);
+  const r = items.find(x=>x.id===id);
   if(!r) return;
-  const first = confirm(`Supprimer cette recette ?\n\n${r.name}`);
-  if(!first) return;
+  if(!confirm(`Supprimer cet élément ?\n\n${r.name}`)) return;
   const typed = prompt(`Cette action est irréversible.\n\nPour confirmer, tape exactement : SUPPRIMER`);
-  if(typed !== "SUPPRIMER") {
-    alert("Suppression annulée.");
-    return;
-  }
-  recipes = recipes.filter(x=>x.id!==id);
-  saveRecipes();
+  if(typed !== "SUPPRIMER"){ alert("Suppression annulée."); return; }
+  items = items.filter(x=>x.id!==id);
+  saveItems();
   renderSelect();
   renderRecipes();
-  alert("Recette supprimée.");
+  alert("Élément supprimé.");
 }
 
-function exportRecipes(){
-  const data = {
-    app: "Calcul glucides DT1",
-    version: "secure-1.0",
-    exportedAt: new Date().toISOString(),
-    recipes
-  };
+function exportItems(){
+  const data = {app:"Calcul glucides DT1", version:"categories-1.0", exportedAt:new Date().toISOString(), items};
   const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  const date = new Date().toISOString().slice(0,10);
   a.href = url;
-  a.download = `sauvegarde-recettes-dt1-${date}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  a.download = `sauvegarde-glucides-dt1-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
 }
 
-function importRecipesFile(file){
+function importItemsFile(file){
   const reader = new FileReader();
   reader.onload = () => {
-    try {
+    try{
       const data = JSON.parse(reader.result);
-      const imported = Array.isArray(data) ? data : data.recipes;
+      const imported = data.items || data.recipes || data;
       if(!Array.isArray(imported)) throw new Error("Format invalide");
-      const clean = imported.map((r, idx) => ({
-        id: r.id || `import_${Date.now()}_${idx}`,
-        name: String(r.name || r.nom || "").trim(),
-        carbs: Number(r.carbs ?? r.glucides ?? r.glucidesNets100g),
-        photo: r.photo || ""
-      })).filter(r => r.name && !isNaN(r.carbs));
-      if(clean.length === 0) throw new Error("Aucune recette valide");
-      const ok = confirm(`Importer ${clean.length} recette(s) ?\n\nCette action remplacera la banque actuelle sur cet appareil.`);
-      if(!ok) return;
-      recipes = clean;
-      saveRecipes();
+      const clean = imported.map(normalizeItem).filter(r=>r.name && !isNaN(r.carbs));
+      if(clean.length === 0) throw new Error("Aucun élément valide");
+      if(!confirm(`Importer ${clean.length} élément(s) ?\n\nCela remplacera la banque actuelle sur cet appareil.`)) return;
+      items = clean;
+      saveItems();
       renderSelect();
       renderRecipes();
       alert("Importation terminée.");
-    } catch(e) {
-      alert("Impossible d'importer ce fichier. Vérifie qu'il s'agit bien d'une sauvegarde JSON valide.");
+    }catch(e){
+      alert("Impossible d'importer ce fichier JSON.");
     }
   };
   reader.readAsText(file);
 }
 
 document.addEventListener("DOMContentLoaded", ()=>{
-  loadRecipes();
+  loadItems();
   renderSelect();
   renderAdmin();
 
@@ -211,22 +214,33 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
   document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.tab)));
 
+  document.querySelectorAll(".filter").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      document.querySelectorAll(".filter").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      currentFilter = btn.dataset.filter;
+      renderRecipes();
+    });
+  });
+
   document.getElementById("unlockBtn").addEventListener("click",()=>{
     if(document.getElementById("adminPin").value === getPin()){
       sessionStorage.setItem(LS_ADMIN,"1");
       document.getElementById("adminPin").value="";
       renderAdmin();
+      renderRecipes();
     }else alert("Code incorrect.");
   });
 
   document.getElementById("lockBtn").addEventListener("click",()=>{
     sessionStorage.removeItem(LS_ADMIN);
     renderAdmin();
+    renderRecipes();
   });
 
   document.getElementById("changePinBtn").addEventListener("click",()=>{
     const p = document.getElementById("newPin").value.trim();
-    if(p.length < 4){ alert("Choisis un code d'au moins 4 chiffres/caractères."); return; }
+    if(p.length < 4){ alert("Choisis un code d'au moins 4 caractères."); return; }
     localStorage.setItem(LS_PIN,p);
     document.getElementById("newPin").value="";
     alert("Code modifié.");
@@ -246,38 +260,38 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
   document.getElementById("saveRecipeBtn").addEventListener("click",()=>{
     if(!isAdmin()) return;
-    const id = document.getElementById("recipeId").value || `r_${Date.now()}`;
+    const id = document.getElementById("recipeId").value || `item_${Date.now()}`;
+    const category = document.getElementById("recipeCategory").value;
     const name = document.getElementById("recipeName").value.trim();
     const carbs = parseFloat(document.getElementById("recipeCarbs").value);
     if(!name || isNaN(carbs)){ alert("Entre un nom et une valeur de glucides valide."); return; }
-    const existing = recipes.find(r=>r.id===id);
+    const existing = items.find(r=>r.id===id);
     if(existing){
       existing.name = name;
       existing.carbs = carbs;
+      existing.category = category;
       existing.photo = currentPhotoData;
     }else{
-      recipes.push({id,name,carbs,photo:currentPhotoData});
+      items.push({id,name,carbs,category,photo:currentPhotoData});
     }
-    saveRecipes();
+    saveItems();
     clearForm();
     renderSelect();
     renderRecipes();
-    alert("Recette enregistrée.");
+    alert("Élément enregistré.");
   });
 
   document.getElementById("cancelEditBtn").addEventListener("click", clearForm);
-  document.getElementById("exportBtn").addEventListener("click", exportRecipes);
+  document.getElementById("exportBtn").addEventListener("click", exportItems);
   document.getElementById("importFile").addEventListener("change", e=>{
     const file = e.target.files[0];
-    if(file) importRecipesFile(file);
+    if(file) importItemsFile(file);
     e.target.value = "";
   });
 
   document.getElementById("recipeList").addEventListener("click", e=>{
-    const edit = e.target.dataset.edit;
-    const del = e.target.dataset.delete;
-    if(edit) editRecipe(edit);
-    if(del) deleteRecipe(del);
+    if(e.target.dataset.edit) editItem(e.target.dataset.edit);
+    if(e.target.dataset.delete) deleteItem(e.target.dataset.delete);
   });
 
   if("serviceWorker" in navigator){
