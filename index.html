@@ -1,70 +1,125 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#f75f8f" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f45b8a">
   <title>Calcul glucides DT1</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="app">
-    <section class="screen active" id="screen-calculer">
-      <header class="hero">
+    <section id="screen-calc" class="screen active">
+      <header class="top">
         <h1>Calcul glucides</h1>
-        <p>Simple et rapide <span>♥</span></p>
+        <p>Simple et rapide 💗</p>
       </header>
 
       <div class="field-block">
-        <div class="label-row"><span class="bubble">🍲</span><label for="recipeSelect">Recette:</label></div>
+        <div class="label-row"><span class="icon">🍲</span><label for="recipeSelect">Recette:</label></div>
         <select id="recipeSelect"></select>
       </div>
 
-      <div class="field-block">
-        <div class="label-row"><span class="bubble">⚖️</span><label for="portionWeight">Poids de la portion:</label></div>
-        <div class="input-wrap"><input id="portionWeight" type="number" inputmode="decimal" min="0" step="1" placeholder="Ex. 150" /><span>g</span></div>
+      <div id="recipePreview" class="preview hidden">
+        <img id="previewImg" alt="">
+        <div>
+          <strong id="previewName"></strong>
+          <small id="previewCarbs"></small>
+        </div>
       </div>
 
       <div class="field-block">
-        <div class="label-row"><span class="bubble">🧮</span><strong>Voici les glucides à entrer dans la pompe:</strong></div>
-        <div class="result-card"><div id="resultValue">0 g</div><small>de glucides nets</small></div>
+        <div class="label-row"><span class="icon">⚖️</span><label for="portionWeight">Poids de la portion:</label></div>
+        <div class="input-unit">
+          <input id="portionWeight" type="number" inputmode="decimal" min="0" step="1" placeholder="Ex. 150">
+          <span>g</span>
+        </div>
       </div>
 
-      <div class="notice"><span>i</span>Les valeurs sont basées sur les glucides nets par 100 g de chaque recette. Calcul indicatif — suivre les recommandations de votre équipe médicale.</div>
+      <div class="result-label">
+        <span class="icon">🧮</span>
+        <h2>Voici les glucides à<br>entrer dans la pompe:</h2>
+      </div>
+
+      <div class="result-card">
+        <div id="carbResult" class="result-number">0 g</div>
+        <div class="result-sub">de glucides nets</div>
+      </div>
+
+      <div class="notice">ℹ️ Calcul indicatif. Les valeurs sont basées sur les glucides nets par 100 g. Le résultat est toujours arrondi à la baisse.</div>
     </section>
 
-    <section class="screen" id="screen-recettes">
-      <header class="topbar"><h2>Recettes</h2><button id="addRecipeBtn" class="round">+</button></header>
-      <input id="searchRecipe" class="search" placeholder="Rechercher une recette..." />
-      <div id="recipeList" class="recipe-list"></div>
+    <section id="screen-recipes" class="screen">
+      <header class="top small">
+        <h1>Recettes</h1>
+        <p>Base de données locale</p>
+      </header>
+      <input id="searchRecipe" class="search" placeholder="Rechercher une recette...">
+      <div id="recipeList" class="list"></div>
     </section>
 
-    <section class="screen" id="screen-parametres">
-      <header class="topbar"><h2>Paramètres</h2></header>
-      <div class="card"><h3>Affichage</h3><label>Décimales du résultat</label><select id="decimalSelect"><option value="0">0</option><option value="1" selected>1</option><option value="2">2</option></select></div>
-      <div class="card"><h3>Données</h3><p>Les recettes sont enregistrées directement sur cet appareil.</p><button id="exportBtn">Exporter les recettes</button><button id="importBtn">Importer</button><input id="importFile" type="file" accept="application/json" hidden /></div>
-      <div class="card warning"><h3>Réinitialisation</h3><button id="resetBtn">Réinitialiser les recettes</button></div>
+    <section id="screen-admin" class="screen">
+      <header class="top small">
+        <h1>Paramètres</h1>
+        <p id="adminStatus">Mode protégé</p>
+      </header>
+
+      <div id="lockedPanel" class="card">
+        <h2>Accès administrateur</h2>
+        <p>Entre le code pour ajouter, modifier ou supprimer des recettes.</p>
+        <input id="adminPin" type="password" inputmode="numeric" placeholder="Code admin">
+        <button id="unlockBtn" class="primary">Déverrouiller</button>
+        <small>Code par défaut : 1234. Change-le après la première connexion.</small>
+      </div>
+
+      <div id="adminPanel" class="hidden">
+        <div class="card">
+          <h2>Ajouter / modifier une recette</h2>
+          <input id="recipeId" type="hidden">
+
+          <label>Nom de la recette</label>
+          <input id="recipeName" placeholder="Ex. Pâté chinois">
+
+          <label>Glucides nets / 100 g</label>
+          <input id="recipeCarbs" type="number" inputmode="decimal" step="0.1" placeholder="Ex. 7.8">
+
+          <label>Photo</label>
+          <input id="recipePhoto" type="file" accept="image/*" capture="environment">
+          <img id="photoPreview" class="photo-preview hidden" alt="">
+
+          <button id="saveRecipeBtn" class="primary">Enregistrer la recette</button>
+          <button id="cancelEditBtn" class="secondary hidden">Annuler la modification</button>
+        </div>
+
+        <div class="card">
+          <h2>Sauvegarde des recettes</h2>
+          <p>Exporte régulièrement ta banque de recettes pour pouvoir la restaurer sur un autre téléphone ou en cas de problème.</p>
+          <button id="exportBtn" class="secondary">Exporter la banque de recettes</button>
+          <label class="import-label" for="importFile">Importer une sauvegarde</label>
+          <input id="importFile" type="file" accept="application/json,.json">
+        </div>
+
+        <div class="card">
+          <h2>Code administrateur</h2>
+          <input id="newPin" type="password" inputmode="numeric" placeholder="Nouveau code">
+          <button id="changePinBtn" class="secondary">Changer le code</button>
+        </div>
+
+        <div class="card">
+          <h2>Verrouillage</h2>
+          <p>Verrouille les paramètres après avoir terminé les modifications.</p>
+          <button id="lockBtn" class="secondary">Verrouiller les paramètres</button>
+        </div>
+      </div>
     </section>
   </main>
 
   <nav class="tabs">
-    <button data-tab="calculer" class="active">⌂<span>Calculer</span></button>
-    <button data-tab="recettes">▤<span>Recettes</span></button>
-    <button data-tab="parametres">⚙<span>Paramètres</span></button>
+    <button data-tab="calc" class="active">🏠<span>Calculer</span></button>
+    <button data-tab="recipes">📋<span>Recettes</span></button>
+    <button data-tab="admin">⚙️<span>Admin</span></button>
   </nav>
-
-  <dialog id="recipeDialog">
-    <form method="dialog" id="recipeForm">
-      <h2 id="dialogTitle">Ajouter une recette</h2>
-      <input id="recipeId" type="hidden" />
-      <label>Nom de la recette<input id="recipeName" required /></label>
-      <label>Glucides nets / 100 g<input id="recipeCarbs" type="number" step="0.1" min="0" required /></label>
-      <label>URL d'image optionnelle<input id="recipeImage" placeholder="images/photo.jpg ou https://..." /></label>
-      <menu><button value="cancel" type="button" id="cancelDialog">Annuler</button><button type="submit">Enregistrer</button></menu>
-    </form>
-  </dialog>
 
   <script src="script.js"></script>
 </body>
