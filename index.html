@@ -14,6 +14,11 @@
       <button id="helpTopBtn" class="help-bubble" type="button">Aide-Mémoire</button>
       <button id="adminTopBtn" class="top-gear" type="button" aria-label="Paramètres">⚙️</button>
     </div>
+
+    <div id="updateBanner" class="update-banner hidden">
+      <span>Nouvelle version disponible</span>
+      <button id="updateNowBtn" type="button">Mettre à jour</button>
+    </div>
     <section id="screen-calc" class="screen active">
       <header class="top">
         <h1>Calcul glucides</h1>
@@ -121,6 +126,10 @@
           <input id="finalRecipeWeight" type="number" inputmode="decimal" min="0" step="1" placeholder="Ex. 850">
           <span>g</span>
         </div>
+
+        <label>Photo de la recette</label>
+        <input id="createdRecipePhoto" type="file" accept="image/*">
+        <img id="createdRecipePhotoPreview" class="photo-preview hidden" alt="">
       </div>
 
       <div class="card">
@@ -217,6 +226,8 @@
           <h2>Base centrale</h2>
           <p>La base commune est chargée depuis <strong>database.json</strong> sur GitHub. Pour mettre à jour tous les utilisateurs, remplace ce fichier dans le dépôt.</p>
           <button id="forceSyncBtn" class="secondary">Recharger la base centrale</button>
+          <div class="version-info">Version installée : <strong id="appVersionLabel">2.0.0</strong></div>
+          <button id="checkUpdateBtn" class="secondary">Vérifier les mises à jour</button>
         </div>
 
         <div class="card">
@@ -239,6 +250,31 @@
       </div>
     </section>
   </main>
+
+    <section id="screen-detail" class="screen">
+      <header class="top small">
+        <h1 id="detailTitle">Détail</h1>
+        <p>Fiche de l’aliment ou de la recette</p>
+      </header>
+      <div class="card detail-card">
+        <img id="detailPhoto" class="detail-photo hidden" alt="">
+        <h2 id="detailName"></h2>
+        <span id="detailCategory" class="pill"></span>
+        <span id="detailSource" class="pill source-pill"></span>
+        <div class="detail-stats">
+          <div><small>Glucides / 100 g</small><strong id="detailCarbsPer100">0 g</strong></div>
+          <div><small>Glucides totaux</small><strong id="detailTotalCarbs">—</strong></div>
+        </div>
+        <div id="detailIngredientsBlock" class="hidden">
+          <h3>Ingrédients</h3>
+          <div id="detailIngredientsList" class="detail-ingredients"></div>
+        </div>
+        <button id="detailUseBtn" class="primary">Utiliser dans le calculateur</button>
+        <button id="detailEditBtn" class="secondary hidden">Modifier cette recette</button>
+        <button id="detailBackBtn" class="secondary">Retour au registre</button>
+      </div>
+    </section>
+
 <nav class="tabs">
     <button data-tab="calc" class="active">🏠<span>Calculer</span></button>
     <button data-tab="recipes">📋<span>Registre</span></button>

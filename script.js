@@ -1,4 +1,6 @@
 const DEFAULT_ADMIN_PIN = "112233";
+const APP_VERSION = "2.0.0";
+const VERSION_URL = "version.json";
 const CENTRAL_DB_URL = "database.json";
 
 const FALLBACK_ITEMS = [
@@ -22,6 +24,9 @@ let currentPhotoData = "";
 let currentFilter = "Tous";
 let currentRecipeIngredient = null;
 let recipeIngredients = [];
+let createdRecipePhotoData = "";
+let editingRecipeId = "";
+let currentDetailItemId = "";
 let currentLetterFilter = "Tous";
 let favoriteIds = [];
 let recentIds = [];
@@ -33,7 +38,10 @@ function normalizeItem(r, idx=0, source="local"){
     carbs: Number(r.carbs ?? r.glucides ?? r.glucidesNets100g),
     category: (r.category === "Aliment" || r.category === "Recette") ? r.category : "Recette",
     photo: r.photo || "",
-    source: r.source || source
+    source: r.source || source,
+    ingredients: r.ingredients || [],
+    totalCarbs: r.totalCarbs,
+    finalWeight: r.finalWeight
   };
 }
 
@@ -299,6 +307,7 @@ function renderRecipes(){
   filtered.slice(0,300).forEach(r=>{
     const item = document.createElement("div");
     item.className = "recipe-item";
+    item.dataset.itemId = r.id;
     const canEdit = isAdmin() && r.source !== "central";
     item.innerHTML = `
       <img src="${photoOrPlaceholder(r)}" alt="">
@@ -435,6 +444,24 @@ async function refreshAll(force=false){
 }
 
 
+
+function readImageFileToDataUrl(file, callback){ if(!file) return; const reader = new FileReader(); reader.onload = () => callback(reader.result); reader.readAsDataURL(file); }
+async function checkForAppUpdate(showMessage=false){ try{ const res = await fetch(`${VERSION_URL}?v=${Date.now()}`, {cache:"no-store"}); if(!res.ok) throw new Error("version.json introuvable"); const data = await res.json(); if(data.version && data.version !== APP_VERSION){ document.getElementById("updateBanner").classList.remove("hidden"); if(showMessage) alert(`Nouvelle version disponible : ${data.version}`); return true; } document.getElementById("updateBanner").classList.add("hidden"); if(showMessage) alert("L’application est déjà à jour."); return false; }catch(e){ if(showMessage) alert("Impossible de vérifier les mises à jour pour le moment."); return false; } }
+async function applyAppUpdate(){ try{ 
+  document.getElementById("createdRecipePhoto").addEventListener("change", e=>{
+    const file = e.target.files[0];
+    readImageFileToDataUrl(file, dataUrl=>{ createdRecipePhotoData = dataUrl; document.getElementById("createdRecipePhotoPreview").src = dataUrl; document.getElementById("createdRecipePhotoPreview").classList.remove("hidden"); });
+  });
+  document.getElementById("detailBackBtn").addEventListener("click",()=>setTab("recipes"));
+  document.getElementById("detailUseBtn").addEventListener("click",()=>{ if(currentDetailItemId){ selectItem(currentDetailItemId); setTab("calc"); } });
+  document.getElementById("detailEditBtn").addEventListener("click", editRecipeFromDetail);
+  document.getElementById("checkUpdateBtn").addEventListener("click",()=>checkForAppUpdate(true));
+  document.getElementById("updateNowBtn").addEventListener("click", applyAppUpdate);
+  document.getElementById("appVersionLabel").textContent = APP_VERSION;
+  checkForAppUpdate(false);
+
+  if("serviceWorker" in navigator){ const reg = await navigator.serviceWorker.getRegistration(); if(reg) await reg.update(); } if("caches" in window){ const keys = await caches.keys(); await Promise.all(keys.map(k => caches.delete(k))); } }catch(e){} window.location.reload(true); }
+
 function unitToApproxGrams(qty, unit){
   const q = Number(qty) || 0;
   const factors = {"g":1,"ml":1,"tasse":250,"demi-tasse":125,"c-soupe":15,"c-the":5};
@@ -485,6 +512,13 @@ function addIngredientToRecipe(){
   document.getElementById("ingredientSearch").value = "";
   document.getElementById("ingredientQty").value = "";
   document.getElementById("selectedIngredientBox").classList.add("hidden");
+  const photoInput = document.getElementById("createdRecipePhoto");
+  if(photoInput) photoInput.value = "";
+  const photoPreview = document.getElementById("createdRecipePhotoPreview");
+  if(photoPreview) photoPreview.classList.add("hidden");
+  createdRecipePhotoData = "";
+  editingRecipeId = "";
+  document.getElementById("saveCreatedRecipeBtn").textContent = "Enregistrer dans le registre";
   renderRecipeBuilder();
 }
 
@@ -537,6 +571,34 @@ function saveCreatedRecipe(){
   selectItem(id);
   setTab("calc");
   alert("Recette enregistrée dans le registre.");
+}
+
+
+
+function openDetail(id){
+  const item = items.find(x => x.id === id); if(!item) return; currentDetailItemId = id;
+  document.getElementById("detailTitle").textContent = item.category === "Recette" ? "Fiche recette" : "Fiche aliment";
+  document.getElementById("detailName").textContent = item.name;
+  document.getElementById("detailCategory").textContent = item.category;
+  document.getElementById("detailSource").textContent = item.source === "central" ? "Base centrale" : "Familial";
+  document.getElementById("detailCarbsPer100").textContent = `${String(item.carbs).replace(".", ",")} g`;
+  const photo = document.getElementById("detailPhoto"); if(item.photo){ photo.src = item.photo; photo.classList.remove("hidden"); } else { photo.classList.add("hidden"); }
+  const total = item.totalCarbs || ((item.ingredients && item.ingredients.length) ? item.ingredients.reduce((s, ing) => s + (Number(ing.carbs)||0), 0) : null);
+  document.getElementById("detailTotalCarbs").textContent = (item.category === "Recette" && total !== null && !isNaN(total)) ? `${Number(total).toFixed(1).replace(".", ",")} g` : "—";
+  const block = document.getElementById("detailIngredientsBlock"); const list = document.getElementById("detailIngredientsList");
+  if(item.ingredients && item.ingredients.length){ list.innerHTML = item.ingredients.map(ing => `<div class="detail-ingredient"><strong>${ing.name}</strong><small>${ing.qty || ""} ${unitLabel(ing.unit || "g")} ≈ ${Math.round(ing.grams || 0)} g · ${Number(ing.carbs || 0).toFixed(1).replace(".", ",")} g glucides</small></div>`).join(""); block.classList.remove("hidden"); } else { list.innerHTML = ""; block.classList.add("hidden"); }
+  const canEdit = item.source !== "central" && item.category === "Recette" && isAdmin();
+  document.getElementById("detailEditBtn").classList.toggle("hidden", !canEdit);
+  setTab("detail");
+}
+function editRecipeFromDetail(){
+  const item = localItems.find(x => x.id === currentDetailItemId);
+  if(!item){ alert("Cette recette centrale ne peut pas être modifiée directement."); return; }
+  if(!isAdmin()){ alert("Déverrouille les paramètres avec le code admin pour modifier une recette."); return; }
+  editingRecipeId = item.id; recipeIngredients = item.ingredients ? JSON.parse(JSON.stringify(item.ingredients)) : []; createdRecipePhotoData = item.photo || "";
+  document.getElementById("newRecipeName").value = item.name; document.getElementById("finalRecipeWeight").value = item.finalWeight || "";
+  if(createdRecipePhotoData){ document.getElementById("createdRecipePhotoPreview").src = createdRecipePhotoData; document.getElementById("createdRecipePhotoPreview").classList.remove("hidden"); } else { document.getElementById("createdRecipePhotoPreview").classList.add("hidden"); }
+  document.getElementById("saveCreatedRecipeBtn").textContent = "Enregistrer les modifications"; renderRecipeBuilder(); setTab("create");
 }
 
 
@@ -679,9 +741,11 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   });
 
   document.getElementById("recipeList").addEventListener("click", e=>{
-    if(e.target.dataset.fav) toggleFavorite(e.target.dataset.fav);
-    if(e.target.dataset.edit) editItem(e.target.dataset.edit);
-    if(e.target.dataset.delete) deleteItem(e.target.dataset.delete);
+    if(e.target.dataset.fav){ toggleFavorite(e.target.dataset.fav); return; }
+    if(e.target.dataset.edit){ editItem(e.target.dataset.edit); return; }
+    if(e.target.dataset.delete){ deleteItem(e.target.dataset.delete); return; }
+    const row = e.target.closest(".recipe-item");
+    if(row && row.dataset.itemId) openDetail(row.dataset.itemId);
   });
 
   if("serviceWorker" in navigator){
