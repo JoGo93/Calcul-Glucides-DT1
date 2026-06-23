@@ -1,4 +1,4 @@
-const CACHE = "calcul-glucides-dt1-favoris-filtre-v1";
+const CACHE = "calcul-glucides-dt1-top-aide-creer-recette-v1";
 const FILES = ["./","index.html","style.css","script.js","manifest.json","database.json","assets/aide-memoire-diabetes.jpeg"];
 self.addEventListener("install", e => {
   self.skipWaiting();

@@ -10,6 +10,10 @@
 </head>
 <body>
   <main class="app">
+    <div class="top-actions">
+      <button id="helpTopBtn" class="help-bubble" type="button">Aide-Mémoire</button>
+      <button id="adminTopBtn" class="top-gear" type="button" aria-label="Paramètres">⚙️</button>
+    </div>
     <section id="screen-calc" class="screen active">
       <header class="top">
         <h1>Calcul glucides</h1>
@@ -100,6 +104,76 @@
       </div>
     </section>
 
+    
+    <section id="screen-create" class="screen">
+      <header class="top small">
+        <h1>Créer recette</h1>
+        <p>Calcule les glucides d’une recette maison</p>
+      </header>
+
+      <div class="card">
+        <h2>Informations</h2>
+        <label>Nom de la recette</label>
+        <input id="newRecipeName" placeholder="Ex. Muffins aux bleuets">
+
+        <label>Poids final de la recette complète</label>
+        <div class="input-unit compact">
+          <input id="finalRecipeWeight" type="number" inputmode="decimal" min="0" step="1" placeholder="Ex. 850">
+          <span>g</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Ajouter un ingrédient</h2>
+        <label>Rechercher un aliment</label>
+        <div class="ingredient-search-block">
+          <input id="ingredientSearch" autocomplete="off" placeholder="Ex. farine, bleuets, lait...">
+          <div id="ingredientSuggestions" class="suggestions hidden"></div>
+        </div>
+
+        <div id="selectedIngredientBox" class="selected-ingredient hidden">
+          <strong id="selectedIngredientName"></strong>
+          <small id="selectedIngredientCarbs"></small>
+        </div>
+
+        <label>Quantité</label>
+        <input id="ingredientQty" type="number" inputmode="decimal" min="0" step="0.1" placeholder="Ex. 200">
+
+        <label>Unité</label>
+        <select id="ingredientUnit">
+          <option value="g">grammes (g)</option>
+          <option value="ml">millilitres (ml)</option>
+          <option value="tasse">tasse (≈ 250 g/ml)</option>
+          <option value="demi-tasse">1/2 tasse (≈ 125 g/ml)</option>
+          <option value="c-soupe">c. à soupe (≈ 15 g/ml)</option>
+          <option value="c-the">c. à thé (≈ 5 g/ml)</option>
+        </select>
+
+        <button id="addIngredientBtn" class="secondary">+ Ajouter l’ingrédient</button>
+        <div class="notice mini">Pour plus de précision, utilise le poids en grammes lorsque possible. Les tasses/cuillères sont approximatives.</div>
+      </div>
+
+      <div class="card">
+        <h2>Ingrédients de la recette</h2>
+        <div id="ingredientList" class="ingredient-list"></div>
+      </div>
+
+      <div class="recipe-result-card">
+        <div>
+          <small>Glucides totaux</small>
+          <strong id="recipeTotalCarbs">0 g</strong>
+        </div>
+        <div>
+          <small>Glucides / 100 g</small>
+          <strong id="recipeCarbsPer100">0 g</strong>
+        </div>
+      </div>
+
+      <button id="saveCreatedRecipeBtn" class="primary">Enregistrer dans le registre</button>
+      <button id="clearCreatedRecipeBtn" class="secondary">Effacer cette recette</button>
+    </section>
+
+
     <section id="screen-admin" class="screen">
       <header class="top small">
         <h1>Paramètres</h1>
@@ -165,13 +239,10 @@
       </div>
     </section>
   </main>
-
-  <button id="floatingAdminBtn" class="floating-admin" aria-label="Paramètres">⚙️</button>
-
-  <nav class="tabs">
+<nav class="tabs">
     <button data-tab="calc" class="active">🏠<span>Calculer</span></button>
     <button data-tab="recipes">📋<span>Registre</span></button>
-    <button data-tab="help">🧠<span>Aide-mémoire</span></button>
+    <button data-tab="create">👨‍🍳<span>Créer recette</span></button>
   </nav>
 
   <script src="script.js"></script>

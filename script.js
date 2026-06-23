@@ -20,6 +20,8 @@ let items = [];
 let selectedItemId = "";
 let currentPhotoData = "";
 let currentFilter = "Tous";
+let currentRecipeIngredient = null;
+let recipeIngredients = [];
 let currentLetterFilter = "Tous";
 let favoriteIds = [];
 let recentIds = [];
@@ -432,6 +434,112 @@ async function refreshAll(force=false){
   }
 }
 
+
+function unitToApproxGrams(qty, unit){
+  const q = Number(qty) || 0;
+  const factors = {"g":1,"ml":1,"tasse":250,"demi-tasse":125,"c-soupe":15,"c-the":5};
+  return q * (factors[unit] || 1);
+}
+
+function renderIngredientSuggestions(){
+  const input = document.getElementById("ingredientSearch");
+  const box = document.getElementById("ingredientSuggestions");
+  const q = input.value.trim().toLowerCase();
+  if(!q){ box.classList.add("hidden"); box.innerHTML = ""; return; }
+  const matches = sortedItems()
+    .filter(r => r.category === "Aliment" && r.name.toLowerCase().includes(q))
+    .sort((a,b) => priorityScore(b,q) - priorityScore(a,q) || a.name.localeCompare(b.name,"fr",{sensitivity:"base"}))
+    .slice(0,3);
+  if(matches.length === 0){
+    box.innerHTML = `<button class="suggestion" type="button"><div><strong>Aucun résultat</strong><small>Essaie un autre mot.</small></div></button>`;
+    box.classList.remove("hidden"); return;
+  }
+  box.innerHTML = matches.map(r => `
+    <button class="suggestion" type="button" data-ing-id="${r.id}">
+      <img src="${photoOrPlaceholder(r)}" alt="">
+      <div><strong>${r.name}</strong><small>${String(r.carbs).replace(".", ",")} g / 100 g</small></div>
+    </button>`).join("");
+  box.classList.remove("hidden");
+}
+
+function selectRecipeIngredient(id){
+  const item = items.find(x => x.id === id);
+  if(!item) return;
+  currentRecipeIngredient = item;
+  document.getElementById("ingredientSearch").value = item.name;
+  document.getElementById("ingredientSuggestions").classList.add("hidden");
+  document.getElementById("selectedIngredientName").textContent = item.name;
+  document.getElementById("selectedIngredientCarbs").textContent = `${String(item.carbs).replace(".", ",")} g de glucides nets / 100 g`;
+  document.getElementById("selectedIngredientBox").classList.remove("hidden");
+}
+
+function addIngredientToRecipe(){
+  if(!currentRecipeIngredient){ alert("Choisis d’abord un ingrédient."); return; }
+  const qty = parseFloat(document.getElementById("ingredientQty").value);
+  const unit = document.getElementById("ingredientUnit").value;
+  if(isNaN(qty) || qty <= 0){ alert("Entre une quantité valide."); return; }
+  const grams = unitToApproxGrams(qty, unit);
+  const carbs = (Number(currentRecipeIngredient.carbs) * grams) / 100;
+  recipeIngredients.push({id:currentRecipeIngredient.id,name:currentRecipeIngredient.name,carbsPer100:Number(currentRecipeIngredient.carbs),qty,unit,grams,carbs});
+  currentRecipeIngredient = null;
+  document.getElementById("ingredientSearch").value = "";
+  document.getElementById("ingredientQty").value = "";
+  document.getElementById("selectedIngredientBox").classList.add("hidden");
+  renderRecipeBuilder();
+}
+
+function unitLabel(unit){
+  return {"g":"g","ml":"ml","tasse":"tasse","demi-tasse":"1/2 tasse","c-soupe":"c. à soupe","c-the":"c. à thé"}[unit] || unit;
+}
+
+function renderRecipeBuilder(){
+  const list = document.getElementById("ingredientList");
+  if(recipeIngredients.length === 0){
+    list.innerHTML = `<div class="notice mini">Aucun ingrédient ajouté.</div>`;
+  }else{
+    list.innerHTML = recipeIngredients.map((ing, idx) => `
+      <div class="ingredient-row">
+        <div><strong>${ing.name}</strong><small>${ing.qty} ${unitLabel(ing.unit)} ≈ ${Math.round(ing.grams)} g · ${ing.carbs.toFixed(1).replace(".", ",")} g glucides</small></div>
+        <button data-remove-ing="${idx}" type="button">×</button>
+      </div>`).join("");
+  }
+  const total = recipeIngredients.reduce((sum, ing) => sum + ing.carbs, 0);
+  const finalWeight = parseFloat(document.getElementById("finalRecipeWeight").value) || 0;
+  const per100 = finalWeight > 0 ? (total / finalWeight) * 100 : 0;
+  document.getElementById("recipeTotalCarbs").textContent = `${total.toFixed(1).replace(".", ",")} g`;
+  document.getElementById("recipeCarbsPer100").textContent = `${per100.toFixed(1).replace(".", ",")} g`;
+}
+
+function clearRecipeBuilder(){
+  recipeIngredients = [];
+  currentRecipeIngredient = null;
+  document.getElementById("newRecipeName").value = "";
+  document.getElementById("finalRecipeWeight").value = "";
+  document.getElementById("ingredientSearch").value = "";
+  document.getElementById("ingredientQty").value = "";
+  document.getElementById("selectedIngredientBox").classList.add("hidden");
+  renderRecipeBuilder();
+}
+
+function saveCreatedRecipe(){
+  const name = document.getElementById("newRecipeName").value.trim();
+  const finalWeight = parseFloat(document.getElementById("finalRecipeWeight").value) || 0;
+  const total = recipeIngredients.reduce((sum, ing) => sum + ing.carbs, 0);
+  if(!name){ alert("Entre le nom de la recette."); return; }
+  if(recipeIngredients.length === 0){ alert("Ajoute au moins un ingrédient."); return; }
+  if(finalWeight <= 0){ alert("Entre le poids final de la recette complète en grammes."); return; }
+  const per100 = (total / finalWeight) * 100;
+  const id = `local_recipe_${Date.now()}`;
+  localItems.push({id,name,carbs:Math.round(per100*10)/10,category:"Recette",photo:"",source:"local",ingredients:recipeIngredients});
+  saveLocalItems();
+  clearRecipeBuilder();
+  renderRecipes();
+  selectItem(id);
+  setTab("calc");
+  alert("Recette enregistrée dans le registre.");
+}
+
+
 document.addEventListener("DOMContentLoaded", async ()=>{
   loadFavoritesAndRecents();
   await refreshAll(false);
@@ -460,13 +568,29 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 
   document.addEventListener("click", e=>{
     if(!e.target.closest(".search-block")) hideSuggestions();
+    if(!e.target.closest(".ingredient-search-block")) document.getElementById("ingredientSuggestions").classList.add("hidden");
   });
 
   document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.tab)));
-
-  document.getElementById("floatingAdminBtn").addEventListener("click",()=>{
-    setTab("admin");
+  document.getElementById("helpTopBtn").addEventListener("click",()=>{ setTab("help"); });
+  document.getElementById("adminTopBtn").addEventListener("click",()=>{ setTab("admin"); });
+  document.getElementById("ingredientSearch").addEventListener("input", renderIngredientSuggestions);
+  document.getElementById("ingredientSearch").addEventListener("focus", renderIngredientSuggestions);
+  document.getElementById("ingredientSuggestions").addEventListener("click", e=>{
+    const btn = e.target.closest("[data-ing-id]");
+    if(btn) selectRecipeIngredient(btn.dataset.ingId);
   });
+  document.getElementById("addIngredientBtn").addEventListener("click", addIngredientToRecipe);
+  document.getElementById("finalRecipeWeight").addEventListener("input", renderRecipeBuilder);
+  document.getElementById("ingredientList").addEventListener("click", e=>{
+    if(e.target.dataset.removeIng !== undefined){
+      recipeIngredients.splice(Number(e.target.dataset.removeIng),1);
+      renderRecipeBuilder();
+    }
+  });
+  document.getElementById("saveCreatedRecipeBtn").addEventListener("click", saveCreatedRecipe);
+  document.getElementById("clearCreatedRecipeBtn").addEventListener("click", clearRecipeBuilder);
+  renderRecipeBuilder();
 
   document.querySelectorAll(".filter").forEach(btn=>{
     btn.addEventListener("click",()=>{
