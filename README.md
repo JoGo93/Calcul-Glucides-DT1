@@ -1,5 +1,11 @@
-# Calcul glucides DT1 v2.1
+# Calcul glucides DT1 — Version 2.2.0
 
-Téléverser le contenu de ce dossier à la racine GitHub.
+## Nouveautés v2.2
+- Mode Produit emballé amélioré.
+- Bouton ? d’aide avec image de valeurs nutritives.
+- Portion d’étiquette en quantité + unité.
+- Champ équivalent en grammes modifiable.
+- Calcul automatique glucides nets et glucides / 100 g.
+- Mise à jour PWA et conservation des données locales conservées.
 
-Inclus: mise à jour depuis Paramètres sans admin, préservation des données locales, produit emballé, recherche intelligente, fiches détaillées, photos, édition des recettes locales.
+Téléverse le contenu du dossier à la racine du dépôt GitHub.
