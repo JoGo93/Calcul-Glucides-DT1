@@ -1,5 +1,5 @@
 {
-  "version": "2.2.0",
-  "releasedAt": "2026-06-25T20:39:46Z",
-  "notes": "v2.2 Pro: aide valeurs nutritives, unités de portion, équivalent en grammes et produit emballé amélioré."
+  "version": "2.3.0",
+  "releasedAt": "2026-06-25T20:47:54Z",
+  "notes": "v2.3 : retrait de la recherche intelligente lourde et remplacement de la base Santé Canada par la banque personnalisée légère."
 }

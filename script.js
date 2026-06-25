@@ -1,3 +1,5 @@
+const APP_VERSION = "2.3.0";
+const VERSION_URL = "version.json";
 
 const DEFAULT_ADMIN_PIN="112233";
 const APP_VERSION="2.2.0";
@@ -69,3 +71,43 @@ function clearProductBuilder(){["productName","productCarbs","productFiber","pro
 function saveProduct(){const name=document.getElementById("productName").value.trim();const carbs=parseFloat(document.getElementById("productCarbs").value)||0;const fiber=parseFloat(document.getElementById("productFiber").value)||0;const qty=parseFloat(document.getElementById("productServingQty").value)||0;const unit=document.getElementById("productServingUnit").value;const serving=parseFloat(document.getElementById("productServingGrams").value)||0;if(!name){alert("Entre le nom du produit.");return}if(serving<=0){alert("Entre l’équivalent en grammes de la portion.");return}const net=Math.max(0,carbs-fiber);const per100=net/serving*100;const id=`local_product_${Date.now()}`;localItems.push({id,name,carbs:Math.round(per100*10)/10,category:"Aliment",photo:productPhotoData||"",source:"local",label:{carbs,fiber,qty,unit,serving,net}});saveLocalItems();clearProductBuilder();renderRecipes();selectItem(id);setTab("calc");alert("Produit enregistré dans le registre.")}
 function setupV22(){document.getElementById("productServingQty")?.addEventListener("input",()=>{document.getElementById("productServingGrams").value="";suggestServingGrams()});document.getElementById("productServingUnit")?.addEventListener("change",()=>{document.getElementById("productServingGrams").value="";suggestServingGrams()});document.getElementById("productServingGrams")?.addEventListener("input",renderProductCalc);document.getElementById("nutritionHelpBtn")?.addEventListener("click",()=>document.getElementById("nutritionHelpModal").classList.remove("hidden"));document.getElementById("closeNutritionHelpBtn")?.addEventListener("click",()=>document.getElementById("nutritionHelpModal").classList.add("hidden"));document.getElementById("nutritionHelpModal")?.addEventListener("click",e=>{if(e.target.id==="nutritionHelpModal")e.currentTarget.classList.add("hidden")});const v=document.getElementById("appVersionLabel");if(v)v.textContent=APP_VERSION;renderProductCalc()}
 document.addEventListener("DOMContentLoaded",()=>setTimeout(setupV22,50));
+
+
+/* === v2.3 fast search override ===
+   Retire la recherche intelligente lourde pour éviter les ralentissements.
+   Recherche simple : texte normalisé + favoris/récents en priorité.
+*/
+function dt1FastNormalize(text){
+  return (text || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/œ/g, "oe")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+smartSearchScore = function(item, query){
+  const q = dt1FastNormalize(query);
+  const name = dt1FastNormalize(item && item.name ? item.name : "");
+  if(!q) return 0;
+  let score = 0;
+  if(name === q) score += 1000;
+  if(name.startsWith(q)) score += 600;
+  if(name.includes(q)) score += 300;
+
+  const words = q.split(" ").filter(Boolean);
+  for(const w of words){
+    if(name.includes(w)) score += 80;
+  }
+
+  if(typeof isFavorite === "function" && isFavorite(item.id)) score += 120;
+  if(typeof recentIds !== "undefined" && recentIds.includes(item.id)) score += 60;
+  if(item.category === "Recette") score += 20;
+  return score;
+};
+
+priorityScore = function(item, q){
+  return smartSearchScore(item, q);
+};
