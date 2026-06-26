@@ -1,3 +1,4 @@
+const APP_VERSION = "2.6.0";
 
 const DEFAULT_ADMIN_PIN="112233";
 const APP_VERSION="2.1.0";
@@ -76,3 +77,120 @@ function hideSuggestions(){
     box.classList.add("hidden");
   }
 }
+
+
+
+
+/* === v2.6 : aide valeurs nutritives + portion flexible === */
+function v26UnitToApproxGrams(qty, unit){
+  const q = Number(qty) || 0;
+  const factors = {
+    "g": 1,
+    "ml": 1,
+    "tasse": 250,
+    "demi-tasse": 125,
+    "quart-tasse": 60,
+    "c-soupe": 15,
+    "c-the": 5,
+    "biscuit": 1,
+    "tranche": 1,
+    "barre": 1,
+    "morceau": 1,
+    "unite": 1,
+    "autre": 1
+  };
+  return q * (factors[unit] || 1);
+}
+
+function v26SyncProductServing(){
+  const qtyEl = document.getElementById("productServingQty");
+  const unitEl = document.getElementById("productServingUnit");
+  const gramsEl = document.getElementById("productServingGrams");
+  const hiddenServing = document.getElementById("productServing");
+
+  if(!qtyEl || !unitEl || !gramsEl) return;
+
+  const qty = parseFloat(qtyEl.value) || 0;
+  const unit = unitEl.value || "g";
+
+  if(!gramsEl.value && qty > 0){
+    const estimate = v26UnitToApproxGrams(qty, unit);
+    if(estimate > 0){
+      gramsEl.value = Math.round(estimate * 10) / 10;
+    }
+  }
+
+  if(hiddenServing){
+    hiddenServing.value = gramsEl.value || "";
+  }
+
+  if(typeof renderProductCalc === "function"){
+    renderProductCalc();
+  }else{
+    v26RenderProductCalcFallback();
+  }
+}
+
+function v26RenderProductCalcFallback(){
+  const carbs = parseFloat(document.getElementById("productCarbs")?.value) || 0;
+  const fiber = parseFloat(document.getElementById("productFiber")?.value) || 0;
+  const serving = parseFloat(document.getElementById("productServingGrams")?.value || document.getElementById("productServing")?.value) || 0;
+  const net = Math.max(0, carbs - fiber);
+  const per100 = serving > 0 ? (net / serving) * 100 : 0;
+
+  const n = document.getElementById("productNetCarbs");
+  const p = document.getElementById("productCarbsPer100");
+  if(n) n.textContent = `${net.toFixed(1).replace(".", ",")} g`;
+  if(p) p.textContent = `${per100.toFixed(1).replace(".", ",")} g`;
+}
+
+function v26Setup(){
+  const helpBtn = document.getElementById("nutritionHelpBtn");
+  const modal = document.getElementById("nutritionHelpModal");
+  const closeBtn = document.getElementById("closeNutritionHelpBtn");
+  const okBtn = document.getElementById("understoodNutritionHelpBtn");
+
+  if(helpBtn && modal){
+    helpBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+  }
+  if(closeBtn && modal){
+    closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
+  }
+  if(okBtn && modal){
+    okBtn.addEventListener("click", () => modal.classList.add("hidden"));
+  }
+  if(modal){
+    modal.addEventListener("click", e => {
+      if(e.target === modal) modal.classList.add("hidden");
+    });
+  }
+
+  ["productServingQty","productServingUnit"].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.addEventListener("input", () => {
+      const gramsEl = document.getElementById("productServingGrams");
+      if(gramsEl) gramsEl.value = "";
+      v26SyncProductServing();
+    });
+    if(el) el.addEventListener("change", () => {
+      const gramsEl = document.getElementById("productServingGrams");
+      if(gramsEl) gramsEl.value = "";
+      v26SyncProductServing();
+    });
+  });
+
+  ["productServingGrams","productCarbs","productFiber"].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.addEventListener("input", v26SyncProductServing);
+  });
+
+  // Keep the original hidden productServing field synced before saving.
+  const saveBtn = document.getElementById("saveProductBtn");
+  if(saveBtn){
+    saveBtn.addEventListener("click", v26SyncProductServing, true);
+  }
+
+  v26SyncProductServing();
+}
+
+document.addEventListener("DOMContentLoaded", () => setTimeout(v26Setup, 100));
