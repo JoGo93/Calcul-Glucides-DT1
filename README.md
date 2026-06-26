@@ -1,8 +1,5 @@
-# Calcul glucides DT1 — Version 2.4.0
+# Calcul glucides DT1 v2.1
 
-- Repart de la v2.1 stable.
-- Calculer sans recherche : sélection depuis le registre.
-- 4 utilisés récemment.
-- Bouton + dans le registre.
-- Produit emballé avec aide ? et portion flexible.
-- Aucune recherche intelligente lourde.
+Téléverser le contenu de ce dossier à la racine GitHub.
+
+Inclus: mise à jour depuis Paramètres sans admin, préservation des données locales, produit emballé, recherche intelligente, fiches détaillées, photos, édition des recettes locales.
