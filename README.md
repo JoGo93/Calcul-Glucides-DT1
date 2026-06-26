@@ -1,5 +1,8 @@
-# Calcul glucides DT1 v2.1
+# Calcul glucides DT1 — v2.1 sans propositions
 
-Téléverser le contenu de ce dossier à la racine GitHub.
+Modification appliquée :
+- Les 3 propositions sous la barre Rechercher dans l’onglet Calculer sont désactivées.
+- Le reste de l’application est conservé tel quel à partir du fichier fourni.
 
-Inclus: mise à jour depuis Paramètres sans admin, préservation des données locales, produit emballé, recherche intelligente, fiches détaillées, photos, édition des recettes locales.
+Mise à jour GitHub :
+Téléverse le contenu du dossier à la racine du dépôt, puis Commit changes.
