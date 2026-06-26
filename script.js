@@ -1,4 +1,4 @@
-const APP_VERSION = "2.6.0";
+const APP_VERSION = "2.7.0";
 
 const DEFAULT_ADMIN_PIN="112233";
 const APP_VERSION="2.1.0";
@@ -194,3 +194,40 @@ function v26Setup(){
 }
 
 document.addEventListener("DOMContentLoaded", () => setTimeout(v26Setup, 100));
+
+
+
+
+/* === v2.7 : ouverture/fermeture aide valeurs nutritives === */
+function setupNutritionHelpV27(){
+  const helpBtn = document.getElementById("nutritionHelpBtn");
+  const modal = document.getElementById("nutritionHelpModal");
+  const closeBtn = document.getElementById("closeNutritionHelpBtn");
+
+  if(helpBtn && modal && !helpBtn.dataset.v27Bound){
+    helpBtn.dataset.v27Bound = "1";
+    helpBtn.addEventListener("click", () => {
+      modal.classList.remove("hidden");
+    });
+  }
+
+  if(closeBtn && modal && !closeBtn.dataset.v27Bound){
+    closeBtn.dataset.v27Bound = "1";
+    closeBtn.addEventListener("click", () => {
+      modal.classList.add("hidden");
+    });
+  }
+
+  if(modal && !modal.dataset.v27Bound){
+    modal.dataset.v27Bound = "1";
+    modal.addEventListener("click", (e) => {
+      if(e.target === modal){
+        modal.classList.add("hidden");
+      }
+    });
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(setupNutritionHelpV27, 100);
+});

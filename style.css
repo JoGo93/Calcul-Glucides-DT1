@@ -99,3 +99,92 @@
   border:1px solid #eee;
   margin:10px 0 14px;
 }
+
+
+/* === v2.7 : bouton aide valeurs nutritives révisé === */
+.product-title-row{
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+}
+.product-title-row h2{
+  margin:0 !important;
+}
+button#nutritionHelpBtn.nutrition-help-btn,
+#nutritionHelpBtn{
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  width:40px !important;
+  height:40px !important;
+  min-width:40px !important;
+  min-height:40px !important;
+  padding:0 !important;
+  border-radius:50% !important;
+  border:3px solid #ff66df !important;
+  background:#ffffff !important;
+  color:#ff66df !important;
+  font-size:27px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-shadow:none !important;
+  cursor:pointer !important;
+}
+#nutritionHelpBtn:active{
+  transform:scale(.96);
+}
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.50);
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:14px;
+}
+.modal.hidden{
+  display:none!important;
+}
+.modal-content.nutrition-modal-content{
+  position:relative;
+  background:#fff;
+  border-radius:22px;
+  padding:10px;
+  width:min(94vw, 560px);
+  max-height:92vh;
+  overflow:auto;
+  box-shadow:0 18px 60px rgba(0,0,0,.28);
+}
+.modal-content.image-only-help{
+  padding:0;
+  background:#fff;
+}
+.modal-close{
+  position:absolute;
+  right:10px;
+  top:10px;
+  z-index:2;
+  width:38px;
+  height:38px;
+  border:0;
+  border-radius:50%;
+  background:rgba(255,255,255,.95);
+  color:#6b7280;
+  font-size:30px;
+  font-weight:700;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
+}
+.nutrition-help-img.full-help-image{
+  display:block;
+  width:100%;
+  height:auto;
+  border-radius:22px;
+  margin:0;
+}

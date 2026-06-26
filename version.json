@@ -1,5 +1,5 @@
 {
-  "version": "2.6.0",
-  "releasedAt": "2026-06-26T14:22:35Z",
-  "notes": "v2.6 : bouton aide valeurs nutritives et portion flexible dans Produit emballé."
+  "version": "2.7.0",
+  "releasedAt": "2026-06-26T14:39:20Z",
+  "notes": "v2.7 : bouton aide valeurs nutritives stylé et image d’aide remplacée par la version demandée."
 }

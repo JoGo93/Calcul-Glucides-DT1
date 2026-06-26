@@ -1,10 +1,7 @@
 # Changelog
 
-## v2.6.0
-- Ajout d’un bouton `?` dans Créer recette → Produit emballé.
-- Ajout d’une fenêtre d’aide avec image d’étiquette de valeurs nutritives.
-- Ajout de la portion flexible :
-  - quantité;
-  - unité;
-  - équivalent en grammes modifiable.
-- Calcul automatique des glucides nets / 100 g conservé.
+## v2.7.0
+- Ajustement du bouton `?` dans Créer recette → Produit emballé.
+- Le bouton est maintenant stylé comme le modèle demandé.
+- Remplacement de l’image d’aide par l’image fournie.
+- Aucun autre changement fonctionnel volontaire.
