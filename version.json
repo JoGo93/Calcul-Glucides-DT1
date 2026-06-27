@@ -1,5 +1,5 @@
 {
-  "version": "2.8.1",
-  "releasedAt": "2026-06-27T03:45:30Z",
-  "notes": "v2.8.1 : remplacement Rechercher par Choisir dans le registre, retour du bouton +, retrait des récents."
+  "version": "2.8.0",
+  "releasedAt": "2026-06-27T03:35:01Z",
+  "notes": "v2.8 : Calculer utilise le Registre, bouton + dans le Registre, 4 récents."
 }

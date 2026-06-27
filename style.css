@@ -111,9 +111,9 @@
 }
 
 
-/* === v2.8.1 : choisir dans le registre, sans récents === */
-.choose-registry-block{
-  margin-bottom:24px;
+/* === v2.8 : Calculer via Registre === */
+.select-from-registry-block{
+  margin-bottom:22px;
 }
 .selected-calc-item-card{
   display:flex;
@@ -125,6 +125,9 @@
   background:#fff;
   margin:10px 0 14px;
 }
+.selected-calc-item-card.empty{
+  background:#fff;
+}
 .selected-calc-item-card img{
   width:76px;
   height:62px;
@@ -135,7 +138,7 @@
 .selected-calc-item-card strong{
   display:block;
   font-size:20px;
-  line-height:1.15;
+  line-height:1.1;
 }
 .selected-calc-item-card small{
   display:block;
@@ -144,17 +147,70 @@
   line-height:1.3;
 }
 .selected-calc-item-text{
-  flex:1;
   min-width:0;
+  flex:1;
+}
+.mini-change{
+  margin-left:auto;
+  border:1px solid #f45b8a;
+  background:#fff;
+  color:#f45b8a;
+  border-radius:999px;
+  padding:8px 12px;
+  font-weight:850;
+  white-space:nowrap;
 }
 .choose-registry-btn{
   margin-top:6px!important;
 }
-.recipe-item{
-  position:relative;
+.recent-used-block{
+  margin:-8px 0 26px;
+}
+.recent-used-block h2{
+  font-size:20px;
+  margin:0 0 12px;
+}
+.recent-used-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+.recent-card{
+  border:1px solid #eee;
+  border-radius:16px;
+  padding:10px 6px;
+  text-align:center;
+  background:#fff;
+  min-height:118px;
+}
+.recent-card img{
+  width:54px;
+  height:44px;
+  object-fit:cover;
+  border-radius:11px;
+  background:#f3f3f3;
+}
+.recent-card strong{
+  display:block;
+  font-size:12px;
+  margin-top:6px;
+  line-height:1.15;
+  min-height:28px;
+}
+.recent-card button{
+  border:1px solid #f45b8a;
+  background:#fff;
+  color:#f45b8a;
+  border-radius:50%;
+  width:30px;
+  height:30px;
+  font-size:20px;
+  line-height:20px;
+  margin-top:8px;
+  font-weight:900;
 }
 .recipe-item .quick-add{
-  border:2px solid #f45b8a!important;
+  border:1px solid #f45b8a!important;
   background:#fff!important;
   color:#f45b8a!important;
   border-radius:50%!important;
@@ -164,7 +220,7 @@
   padding:0!important;
   font-size:28px!important;
   font-weight:900!important;
-  line-height:36px!important;
+  line-height:38px!important;
   display:inline-flex!important;
   align-items:center!important;
   justify-content:center!important;
