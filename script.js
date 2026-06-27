@@ -1,4 +1,4 @@
-const APP_VERSION = "2.8.2";
+const APP_VERSION = "2.8.3";
 
 const DEFAULT_ADMIN_PIN="112233";
 const APP_VERSION="2.1.0";
@@ -178,8 +178,8 @@ document.addEventListener("DOMContentLoaded", () => setTimeout(setupNutritionHel
 
 
 
-/* === v2.8.2 : bouton Choisir dans le registre + bouton + === */
-function v282ShowToast(text){
+/* === v2.8.3 : bouton Choisir dans le registre + bouton + === */
+function v283Toast(text){
   const old = document.querySelector(".selection-toast");
   if(old) old.remove();
   const t = document.createElement("div");
@@ -189,27 +189,20 @@ function v282ShowToast(text){
   setTimeout(() => t.remove(), 900);
 }
 
-function v282AddPlusButtons(){
+function v283AddPlusButtons(){
   const list = document.getElementById("recipeList");
   if(!list) return;
 
   list.querySelectorAll(".recipe-item").forEach(row => {
-    if(row.dataset.v282plus === "1") return;
+    if(row.dataset.v283plus === "1") return;
 
-    const id =
-      row.dataset.itemId ||
-      row.querySelector("[data-fav]")?.dataset?.fav ||
-      row.querySelector("[data-edit]")?.dataset?.edit ||
-      row.querySelector("[data-delete]")?.dataset?.delete;
-
+    const id = row.dataset.itemId;
     if(!id) return;
-
-    row.dataset.itemId = id;
 
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "quick-add";
-    btn.dataset.v282QuickAdd = id;
+    btn.dataset.v283QuickAdd = id;
     btn.textContent = "+";
     btn.setAttribute("aria-label", "Ajouter au calculateur");
 
@@ -220,42 +213,46 @@ function v282AddPlusButtons(){
       row.appendChild(btn);
     }
 
-    row.dataset.v282plus = "1";
+    row.dataset.v283plus = "1";
   });
 }
 
-if(typeof renderRecipes === "function" && !window.__v282RenderWrapped){
-  window.__v282RenderWrapped = true;
-  const originalRenderRecipesV282 = renderRecipes;
+if(typeof renderRecipes === "function" && !window.__v283RenderWrapped){
+  window.__v283RenderWrapped = true;
+  const originalRenderRecipesV283 = renderRecipes;
   renderRecipes = function(){
-    originalRenderRecipesV282();
-    setTimeout(v282AddPlusButtons, 0);
+    originalRenderRecipesV283();
+    setTimeout(v283AddPlusButtons, 0);
   };
 }
 
-function v282Setup(){
+function v283Setup(){
   const chooseBtn = document.getElementById("chooseFromRegistryBtn");
-  if(chooseBtn && !chooseBtn.dataset.v282Bound){
-    chooseBtn.dataset.v282Bound = "1";
+  if(chooseBtn && !chooseBtn.dataset.v283Bound){
+    chooseBtn.dataset.v283Bound = "1";
     chooseBtn.addEventListener("click", () => {
-      if(typeof setTab === "function") setTab("recipes");
-      if(typeof renderRecipes === "function") renderRecipes();
-      setTimeout(v282AddPlusButtons, 80);
+      if(typeof setTab === "function"){
+        setTab("recipes");
+      }
+      setTimeout(v283AddPlusButtons, 80);
     });
   }
 
   const recipeList = document.getElementById("recipeList");
-  if(recipeList && !recipeList.dataset.v282Bound){
-    recipeList.dataset.v282Bound = "1";
+  if(recipeList && !recipeList.dataset.v283Bound){
+    recipeList.dataset.v283Bound = "1";
     recipeList.addEventListener("click", e => {
-      const btn = e.target.closest("[data-v282-quick-add]");
+      const btn = e.target.closest("[data-v283-quick-add]");
       if(!btn) return;
 
       e.preventDefault();
       e.stopPropagation();
 
-      const id = btn.dataset.v282QuickAdd;
-      const item = typeof items !== "undefined" ? items.find(x => String(x.id) === String(id)) : null;
+      const id = btn.dataset.v283QuickAdd;
+      let item = null;
+      if(typeof items !== "undefined"){
+        item = items.find(x => String(x.id) === String(id));
+      }
 
       if(typeof selectItem === "function"){
         selectItem(id);
@@ -266,14 +263,14 @@ function v282Setup(){
       }
 
       if(item){
-        v282ShowToast(`✓ ${item.name} sélectionné`);
+        v283Toast(`✓ ${item.name} sélectionné`);
       }
     }, true);
   }
 
-  setTimeout(v282AddPlusButtons, 300);
+  setTimeout(v283AddPlusButtons, 300);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(v282Setup, 150);
+  setTimeout(v283Setup, 150);
 });

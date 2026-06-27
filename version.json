@@ -1,5 +1,5 @@
 {
-  "version": "2.8.2",
-  "releasedAt": "2026-06-27T04:02:22Z",
-  "notes": "v2.8.2 : Choisir dans le registre, bouton +, sans section récents, avec compatibilité JS conservée."
+  "version": "2.8.3",
+  "releasedAt": "2026-06-27T04:12:14Z",
+  "notes": "v2.8.3 : méthode prudente, la recherche interne est conservée mais masquée; bouton Choisir dans le registre; bouton +."
 }

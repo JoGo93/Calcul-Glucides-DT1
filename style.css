@@ -111,13 +111,18 @@
 }
 
 
-/* === v2.8.2 : Choisir dans le registre === */
+/* === v2.8.3 : Choisir dans le registre sans casser la recherche interne === */
 .choose-registry-block{
   margin-bottom:22px;
 }
+.choose-registry-block .label-row,
+.choose-registry-block #itemSearch,
+.choose-registry-block #suggestions{
+  display:none!important;
+}
 .choose-registry-btn{
   width:100%;
-  margin-top:8px!important;
+  margin:0!important;
 }
 .recipe-item .quick-add{
   border:2px solid #f45b8a!important;
