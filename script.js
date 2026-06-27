@@ -1,4 +1,4 @@
-const APP_VERSION = "2.8.0";
+const APP_VERSION = "2.8.2";
 
 const DEFAULT_ADMIN_PIN="112233";
 const APP_VERSION="2.1.0";
@@ -178,141 +178,10 @@ document.addEventListener("DOMContentLoaded", () => setTimeout(setupNutritionHel
 
 
 
-/* === v2.8 : choisir dans le registre + bouton + + 4 récents === */
-function v28GetItemById(id){
-  if(typeof items === "undefined") return null;
-  return items.find(x => String(x.id) === String(id));
-}
-
-function v28SafePhoto(item){
-  try{
-    if(typeof photoOrPlaceholder === "function") return photoOrPlaceholder(item);
-  }catch(e){}
-  return item && item.photo ? item.photo : "";
-}
-
-function v28SetSelectedItem(id){
-  const item = v28GetItemById(id);
-  if(!item) return;
-
-  // Keep compatibility with the existing calculator variables/functions.
-  if(typeof selectedItemId !== "undefined"){
-    selectedItemId = item.id;
-  }
-
-  const searchInput = document.getElementById("itemSearch");
-  if(searchInput) searchInput.value = item.name;
-
-  if(typeof addRecent === "function"){
-    addRecent(item.id);
-  }else{
-    v28AddRecentFallback(item.id);
-  }
-
-  if(typeof updatePreview === "function") updatePreview();
-  if(typeof calculate === "function") calculate();
-
-  v28RenderSelectedCard();
-  v28RenderRecentUsed();
-  v28ShowToast(`✓ ${item.name} sélectionné`);
-}
-
-function v28AddRecentFallback(id){
-  try{
-    let arr = JSON.parse(localStorage.getItem("recentIds") || "[]");
-    arr = arr.filter(x => String(x) !== String(id));
-    arr.unshift(id);
-    arr = arr.slice(0,10);
-    localStorage.setItem("recentIds", JSON.stringify(arr));
-    if(typeof recentIds !== "undefined") recentIds = arr;
-  }catch(e){}
-}
-
-function v28CurrentRecentIds(){
-  if(typeof recentIds !== "undefined" && Array.isArray(recentIds)) return recentIds;
-  try{
-    return JSON.parse(localStorage.getItem("recentIds") || "[]");
-  }catch(e){
-    return [];
-  }
-}
-
-function v28RenderSelectedCard(){
-  const item = typeof selectedItemId !== "undefined" ? v28GetItemById(selectedItemId) : null;
-  const card = document.getElementById("selectedCalcItemCard");
-  const img = document.getElementById("selectedCalcItemPhoto");
-  const name = document.getElementById("selectedCalcItemName");
-  const info = document.getElementById("selectedCalcItemInfo");
-  const change = document.getElementById("changeCalcItemBtn");
-
-  if(!card || !name || !info) return;
-
-  if(!item){
-    card.classList.add("empty");
-    name.textContent = "Aucun";
-    info.textContent = "Choisissez un aliment ou une recette dans le registre.";
-    if(img) img.classList.add("hidden");
-    if(change) change.classList.add("hidden");
-    return;
-  }
-
-  card.classList.remove("empty");
-  name.textContent = item.name;
-  info.textContent = `${item.category || ""} · ${String(item.carbs).replace(".", ",")} g glucides nets / 100 g`;
-
-  if(img){
-    const src = v28SafePhoto(item);
-    if(src){
-      img.src = src;
-      img.classList.remove("hidden");
-    }else{
-      img.classList.add("hidden");
-    }
-  }
-  if(change) change.classList.remove("hidden");
-}
-
-function v28RenderRecentUsed(){
-  const block = document.getElementById("recentUsedBlock");
-  const grid = document.getElementById("recentUsedGrid");
-  if(!block || !grid) return;
-
-  const recentItems = v28CurrentRecentIds()
-    .map(id => v28GetItemById(id))
-    .filter(Boolean)
-    .slice(0,4);
-
-  if(recentItems.length === 0){
-    block.classList.add("hidden");
-    grid.innerHTML = "";
-    return;
-  }
-
-  grid.innerHTML = recentItems.map(item => `
-    <div class="recent-card">
-      <img src="${v28SafePhoto(item)}" alt="">
-      <strong>${item.name}</strong>
-      <button type="button" data-v28-recent-add="${item.id}">+</button>
-    </div>
-  `).join("");
-
-  block.classList.remove("hidden");
-}
-
-function v28GoToRegistry(){
-  if(typeof setTab === "function"){
-    setTab("recipes");
-  }
-  if(typeof renderRecipes === "function"){
-    renderRecipes();
-  }
-  setTimeout(v28AddPlusButtonsToRegistry, 80);
-}
-
-function v28ShowToast(text){
+/* === v2.8.2 : bouton Choisir dans le registre + bouton + === */
+function v282ShowToast(text){
   const old = document.querySelector(".selection-toast");
   if(old) old.remove();
-
   const t = document.createElement("div");
   t.className = "selection-toast";
   t.textContent = text;
@@ -320,30 +189,19 @@ function v28ShowToast(text){
   setTimeout(() => t.remove(), 900);
 }
 
-function v28FindItemIdFromRecipeRow(row){
-  if(!row) return "";
-  if(row.dataset.itemId) return row.dataset.itemId;
-
-  const fav = row.querySelector("[data-fav]");
-  if(fav && fav.dataset.fav) return fav.dataset.fav;
-
-  const edit = row.querySelector("[data-edit]");
-  if(edit && edit.dataset.edit) return edit.dataset.edit;
-
-  const del = row.querySelector("[data-delete]");
-  if(del && del.dataset.delete) return del.dataset.delete;
-
-  return "";
-}
-
-function v28AddPlusButtonsToRegistry(){
+function v282AddPlusButtons(){
   const list = document.getElementById("recipeList");
   if(!list) return;
 
   list.querySelectorAll(".recipe-item").forEach(row => {
-    if(row.dataset.v28plus === "1") return;
+    if(row.dataset.v282plus === "1") return;
 
-    const id = v28FindItemIdFromRecipeRow(row);
+    const id =
+      row.dataset.itemId ||
+      row.querySelector("[data-fav]")?.dataset?.fav ||
+      row.querySelector("[data-edit]")?.dataset?.edit ||
+      row.querySelector("[data-delete]")?.dataset?.delete;
+
     if(!id) return;
 
     row.dataset.itemId = id;
@@ -351,7 +209,7 @@ function v28AddPlusButtonsToRegistry(){
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "quick-add";
-    btn.dataset.v28QuickAdd = id;
+    btn.dataset.v282QuickAdd = id;
     btn.textContent = "+";
     btn.setAttribute("aria-label", "Ajouter au calculateur");
 
@@ -362,58 +220,60 @@ function v28AddPlusButtonsToRegistry(){
       row.appendChild(btn);
     }
 
-    row.dataset.v28plus = "1";
+    row.dataset.v282plus = "1";
   });
 }
 
-// Wrap renderRecipes so the + buttons are added after each refresh/filter.
-if(typeof renderRecipes === "function" && !window.__v28RenderRecipesWrapped){
-  window.__v28RenderRecipesWrapped = true;
-  const originalRenderRecipesV28 = renderRecipes;
+if(typeof renderRecipes === "function" && !window.__v282RenderWrapped){
+  window.__v282RenderWrapped = true;
+  const originalRenderRecipesV282 = renderRecipes;
   renderRecipes = function(){
-    originalRenderRecipesV28();
-    setTimeout(v28AddPlusButtonsToRegistry, 0);
+    originalRenderRecipesV282();
+    setTimeout(v282AddPlusButtons, 0);
   };
 }
 
-function v28Setup(){
-  document.getElementById("chooseFromRegistryBtn")?.addEventListener("click", v28GoToRegistry);
-  document.getElementById("changeCalcItemBtn")?.addEventListener("click", v28GoToRegistry);
-
-  document.getElementById("recentUsedGrid")?.addEventListener("click", e => {
-    const btn = e.target.closest("[data-v28-recent-add]");
-    if(btn){
-      v28SetSelectedItem(btn.dataset.v28RecentAdd);
-    }
-  });
-
-  document.getElementById("recipeList")?.addEventListener("click", e => {
-    const btn = e.target.closest("[data-v28-quick-add]");
-    if(btn){
-      e.preventDefault();
-      e.stopPropagation();
-      v28SetSelectedItem(btn.dataset.v28QuickAdd);
-      if(typeof setTab === "function") setTab("calc");
-      v28RenderRecentUsed();
-    }
-  }, true);
-
-  // Keep card in sync when calculations happen.
-  if(typeof calculate === "function" && !window.__v28CalculateWrapped){
-    window.__v28CalculateWrapped = true;
-    const originalCalculateV28 = calculate;
-    calculate = function(){
-      originalCalculateV28();
-      v28RenderSelectedCard();
-      v28RenderRecentUsed();
-    };
+function v282Setup(){
+  const chooseBtn = document.getElementById("chooseFromRegistryBtn");
+  if(chooseBtn && !chooseBtn.dataset.v282Bound){
+    chooseBtn.dataset.v282Bound = "1";
+    chooseBtn.addEventListener("click", () => {
+      if(typeof setTab === "function") setTab("recipes");
+      if(typeof renderRecipes === "function") renderRecipes();
+      setTimeout(v282AddPlusButtons, 80);
+    });
   }
 
-  v28RenderSelectedCard();
-  v28RenderRecentUsed();
-  setTimeout(v28AddPlusButtonsToRegistry, 300);
+  const recipeList = document.getElementById("recipeList");
+  if(recipeList && !recipeList.dataset.v282Bound){
+    recipeList.dataset.v282Bound = "1";
+    recipeList.addEventListener("click", e => {
+      const btn = e.target.closest("[data-v282-quick-add]");
+      if(!btn) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      const id = btn.dataset.v282QuickAdd;
+      const item = typeof items !== "undefined" ? items.find(x => String(x.id) === String(id)) : null;
+
+      if(typeof selectItem === "function"){
+        selectItem(id);
+      }
+
+      if(typeof setTab === "function"){
+        setTab("calc");
+      }
+
+      if(item){
+        v282ShowToast(`✓ ${item.name} sélectionné`);
+      }
+    }, true);
+  }
+
+  setTimeout(v282AddPlusButtons, 300);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(v28Setup, 150);
+  setTimeout(v282Setup, 150);
 });
