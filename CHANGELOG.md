@@ -1,8 +1,7 @@
 # Changelog
 
-## v2.7.0
-- Bouton `?` dans Créer recette → Produit emballé.
-- Image d’aide des valeurs nutritives.
-- Portion flexible : grammes ou quantité + unité.
-- Conversion automatique vers équivalent en grammes.
-- Le champ équivalent en grammes reste modifiable manuellement.
+## v2.8.1
+- Corrige le remplacement de la barre Rechercher par le bouton “Choisir dans le registre”.
+- Ramène le bouton + dans le Registre.
+- Retire la section “Utilisés récemment”.
+- Conserve les fonctionnalités validées de la v2.7.

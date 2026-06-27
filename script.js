@@ -1,3 +1,4 @@
+const APP_VERSION = "2.8.1";
 
 const DEFAULT_ADMIN_PIN="112233";
 const APP_VERSION="2.1.0";
@@ -173,3 +174,185 @@ function setupNutritionHelpV27Complete(){
 }
 
 document.addEventListener("DOMContentLoaded", () => setTimeout(setupNutritionHelpV27Complete, 120));
+
+
+
+
+/* === v2.8.1 : Calculer sélection via Registre, bouton +, sans récents === */
+function v281ItemById(id){
+  if(typeof items === "undefined") return null;
+  return items.find(x => String(x.id) === String(id));
+}
+
+function v281Photo(item){
+  try{
+    if(typeof photoOrPlaceholder === "function") return photoOrPlaceholder(item);
+  }catch(e){}
+  return item && item.photo ? item.photo : "";
+}
+
+function v281RenderSelectedCard(){
+  const item = typeof selectedItemId !== "undefined" ? v281ItemById(selectedItemId) : null;
+  const card = document.getElementById("selectedCalcItemCard");
+  const img = document.getElementById("selectedCalcItemPhoto");
+  const name = document.getElementById("selectedCalcItemName");
+  const info = document.getElementById("selectedCalcItemInfo");
+  if(!card || !name || !info) return;
+
+  if(!item){
+    card.classList.add("empty");
+    name.textContent = "Aucun aliment sélectionné";
+    info.textContent = "Choisissez un aliment ou une recette dans le registre.";
+    if(img) img.classList.add("hidden");
+    return;
+  }
+
+  card.classList.remove("empty");
+  name.textContent = item.name;
+  info.textContent = `${item.category || ""} · ${String(item.carbs).replace(".", ",")} g glucides nets / 100 g`;
+  if(img){
+    const src = v281Photo(item);
+    if(src){
+      img.src = src;
+      img.classList.remove("hidden");
+    }else{
+      img.classList.add("hidden");
+    }
+  }
+}
+
+function v281SelectForCalculator(id){
+  const item = v281ItemById(id);
+  if(!item) return;
+
+  if(typeof selectedItemId !== "undefined"){
+    selectedItemId = item.id;
+  }
+
+  // Compatibility with older hidden/search-based code.
+  const input = document.getElementById("itemSearch");
+  if(input){
+    input.value = item.name;
+  }
+
+  if(typeof addRecent === "function"){
+    addRecent(item.id);
+  }
+
+  if(typeof updatePreview === "function") updatePreview();
+  if(typeof calculate === "function") calculate();
+
+  v281RenderSelectedCard();
+  v281Toast(`✓ ${item.name} sélectionné`);
+
+  if(typeof setTab === "function"){
+    setTab("calc");
+  }
+}
+
+function v281GoRegistry(){
+  if(typeof setTab === "function"){
+    setTab("recipes");
+  }
+  if(typeof renderRecipes === "function"){
+    renderRecipes();
+  }
+  setTimeout(v281AddPlusButtons, 100);
+}
+
+function v281Toast(text){
+  const old = document.querySelector(".selection-toast");
+  if(old) old.remove();
+  const t = document.createElement("div");
+  t.className = "selection-toast";
+  t.textContent = text;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 900);
+}
+
+function v281IdFromRow(row){
+  if(!row) return "";
+  if(row.dataset.itemId) return row.dataset.itemId;
+  const fav = row.querySelector("[data-fav]");
+  if(fav?.dataset?.fav) return fav.dataset.fav;
+  const edit = row.querySelector("[data-edit]");
+  if(edit?.dataset?.edit) return edit.dataset.edit;
+  const del = row.querySelector("[data-delete]");
+  if(del?.dataset?.delete) return del.dataset.delete;
+
+  // Fallback by visible title text
+  const title = row.querySelector("strong, h3, .name, .title")?.textContent?.trim();
+  if(title && typeof items !== "undefined"){
+    const found = items.find(x => x.name === title);
+    if(found) return found.id;
+  }
+  return "";
+}
+
+function v281AddPlusButtons(){
+  const list = document.getElementById("recipeList");
+  if(!list) return;
+
+  list.querySelectorAll(".recipe-item").forEach(row => {
+    if(row.dataset.v281plus === "1") return;
+
+    const id = v281IdFromRow(row);
+    if(!id) return;
+
+    row.dataset.itemId = id;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "quick-add";
+    btn.dataset.v281QuickAdd = id;
+    btn.textContent = "+";
+    btn.setAttribute("aria-label", "Ajouter au calculateur");
+
+    const actions = row.querySelector(".actions, .recipe-actions, .item-actions");
+    if(actions){
+      actions.prepend(btn);
+    }else{
+      row.appendChild(btn);
+    }
+
+    row.dataset.v281plus = "1";
+  });
+}
+
+if(typeof renderRecipes === "function" && !window.__v281RenderWrapped){
+  window.__v281RenderWrapped = true;
+  const originalRenderRecipesV281 = renderRecipes;
+  renderRecipes = function(){
+    originalRenderRecipesV281();
+    setTimeout(v281AddPlusButtons, 0);
+  };
+}
+
+function v281Setup(){
+  document.getElementById("chooseFromRegistryBtn")?.addEventListener("click", v281GoRegistry);
+
+  document.getElementById("recipeList")?.addEventListener("click", e => {
+    const btn = e.target.closest("[data-v281-quick-add]");
+    if(btn){
+      e.preventDefault();
+      e.stopPropagation();
+      v281SelectForCalculator(btn.dataset.v281QuickAdd);
+    }
+  }, true);
+
+  if(typeof calculate === "function" && !window.__v281CalcWrapped){
+    window.__v281CalcWrapped = true;
+    const originalCalculateV281 = calculate;
+    calculate = function(){
+      originalCalculateV281();
+      v281RenderSelectedCard();
+    };
+  }
+
+  v281RenderSelectedCard();
+  setTimeout(v281AddPlusButtons, 400);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(v281Setup, 150);
+});
