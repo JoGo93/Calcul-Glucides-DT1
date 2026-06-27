@@ -1,5 +1,5 @@
 {
   "version": "2.7.0",
-  "releasedAt": "2026-06-26T14:39:20Z",
-  "notes": "v2.7 : bouton aide valeurs nutritives stylé et image d’aide remplacée par la version demandée."
+  "releasedAt": "2026-06-27T03:26:50Z",
+  "notes": "v2.7 complète : bouton aide valeurs nutritives, image aide, portion flexible et conversion automatique vers grammes."
 }
