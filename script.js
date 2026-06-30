@@ -173,3 +173,79 @@ function setupNutritionHelpV27Complete(){
 }
 
 document.addEventListener("DOMContentLoaded", () => setTimeout(setupNutritionHelpV27Complete, 120));
+
+
+
+/* === v2.8 : calculateur simplifié + version sans bouton update === */
+const LIVIA_APP_VERSION = "2.8.0";
+const LIVIA_VERSION_DATE = "2026-06-30";
+
+function liviaGoToRegistryFromSearch(){
+  if(typeof setTab === "function") setTab("recipes");
+  if(typeof renderRecipes === "function") renderRecipes();
+}
+
+function liviaClearCalculatorSelection(){
+  try{
+    if(typeof selectedItemId !== "undefined") selectedItemId = "";
+    const search = document.getElementById("itemSearch");
+    if(search) search.value = "";
+    const weight = document.getElementById("portionWeight");
+    if(weight) weight.value = "";
+    const result = document.getElementById("result");
+    if(result) result.textContent = "0";
+    const preview = document.getElementById("itemPreview");
+    if(preview) preview.classList.add("hidden");
+    if(typeof calculate === "function") calculate();
+  }catch(e){}
+}
+
+async function liviaRenderVersionInfo(){
+  Array.from(document.querySelectorAll("button")).forEach(b => {
+    const t = (b.textContent || "").toLowerCase();
+    if(t.includes("mettre à jour") || t.includes("mettre a jour")) b.remove();
+  });
+
+  const old = document.getElementById("liviaVersionPanel");
+  if(old) old.remove();
+
+  let latestVersion = LIVIA_APP_VERSION;
+  let latestDate = LIVIA_VERSION_DATE;
+  try{
+    const res = await fetch("version.json?v=" + Date.now(), {cache:"no-store"});
+    if(res.ok){
+      const data = await res.json();
+      latestVersion = data.version || latestVersion;
+      latestDate = data.releasedAt ? String(data.releasedAt).slice(0,10) : (data.date || latestDate);
+    }
+  }catch(e){}
+
+  const panel = document.createElement("div");
+  panel.id = "liviaVersionPanel";
+  panel.className = "version-panel";
+  const isCurrent = latestVersion === LIVIA_APP_VERSION;
+  panel.innerHTML = `
+    <div><strong>Version installée :</strong> v${LIVIA_APP_VERSION.replace(/^v/i,"")}</div>
+    <div><strong>Dernière version disponible :</strong> v${String(latestVersion).replace(/^v/i,"")}</div>
+    <div><strong>Date :</strong> ${latestDate}</div>
+    <div class="${isCurrent ? "version-status-ok" : "version-status-new"}">
+      ${isCurrent ? "Votre application est à jour." : "Une version plus récente est disponible sur GitHub."}
+    </div>`;
+
+  const target = document.getElementById("lockedPanel") || document.getElementById("screen-admin") || document.body;
+  target.appendChild(panel);
+}
+
+function liviaSetupV28(){
+  const search = document.getElementById("itemSearch");
+  if(search){
+    search.setAttribute("readonly","readonly");
+    search.placeholder = "Choisir dans le registre";
+    search.addEventListener("click", liviaGoToRegistryFromSearch);
+    search.addEventListener("focus", () => { search.blur(); liviaGoToRegistryFromSearch(); });
+  }
+  const clearBtn = document.getElementById("clearCalcSelectionBtn");
+  if(clearBtn) clearBtn.addEventListener("click", liviaClearCalculatorSelection);
+  liviaRenderVersionInfo();
+}
+document.addEventListener("DOMContentLoaded", () => setTimeout(liviaSetupV28,150));

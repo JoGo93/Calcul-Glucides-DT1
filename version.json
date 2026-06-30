@@ -1,5 +1,5 @@
 {
-  "version": "2.7.0",
-  "releasedAt": "2026-06-27T03:26:50Z",
-  "notes": "v2.7 complète : bouton aide valeurs nutritives, image aide, portion flexible et conversion automatique vers grammes."
+  "version": "2.8.0",
+  "releasedAt": "2026-06-30",
+  "notes": "v2.8 : barre Rechercher non éditable, bouton Tout effacer, retrait du bouton Mettre à jour l’application, affichage versions."
 }
