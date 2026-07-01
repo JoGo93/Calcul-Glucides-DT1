@@ -249,3 +249,111 @@ function liviaSetupV28(){
   liviaRenderVersionInfo();
 }
 document.addEventListener("DOMContentLoaded", () => setTimeout(liviaSetupV28,150));
+
+
+
+/* === v2.9 : bouton + dans le Registre === */
+function v29Toast(text){
+  const old = document.querySelector(".selection-toast");
+  if(old) old.remove();
+  const t = document.createElement("div");
+  t.className = "selection-toast";
+  t.textContent = text;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 900);
+}
+
+function v29GetItemIdFromRow(row){
+  if(!row) return "";
+  if(row.dataset.itemId) return row.dataset.itemId;
+  const fav = row.querySelector("[data-fav]");
+  if(fav && fav.dataset.fav) return fav.dataset.fav;
+  const edit = row.querySelector("[data-edit]");
+  if(edit && edit.dataset.edit) return edit.dataset.edit;
+  const del = row.querySelector("[data-delete]");
+  if(del && del.dataset.delete) return del.dataset.delete;
+  const title = row.querySelector("strong, h3, .item-name, .recipe-name")?.textContent?.trim();
+  if(title && typeof items !== "undefined"){
+    const found = items.find(x => x.name === title);
+    if(found) return found.id;
+  }
+  return "";
+}
+
+function v29AddPlusButtons(){
+  const list = document.getElementById("recipeList");
+  if(!list) return;
+  const rows = list.querySelectorAll(".recipe-item, .recipe-row, .registry-item, .item-row");
+  rows.forEach(row => {
+    if(row.dataset.v29plus === "1") return;
+    const id = v29GetItemIdFromRow(row);
+    if(!id) return;
+    row.dataset.itemId = id;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "add-to-calculator-btn";
+    btn.dataset.v29Add = id;
+    btn.textContent = "+";
+    btn.setAttribute("aria-label", "Ajouter au calculateur");
+    const star = row.querySelector("[data-fav]");
+    const actions = row.querySelector(".actions, .recipe-actions, .item-actions");
+    if(actions){
+      actions.prepend(btn);
+    }else if(star && star.parentElement){
+      star.parentElement.insertBefore(btn, star);
+    }else{
+      row.appendChild(btn);
+    }
+    row.dataset.v29plus = "1";
+  });
+}
+
+if(typeof renderRecipes === "function" && !window.__v29RenderWrapped){
+  window.__v29RenderWrapped = true;
+  const oldRenderRecipesV29 = renderRecipes;
+  renderRecipes = function(){
+    oldRenderRecipesV29();
+    setTimeout(v29AddPlusButtons, 0);
+  };
+}
+
+function v29SelectForCalculator(id){
+  let item = null;
+  if(typeof items !== "undefined"){
+    item = items.find(x => String(x.id) === String(id));
+  }
+  if(typeof selectItem === "function"){
+    selectItem(id);
+  }else{
+    if(typeof selectedItemId !== "undefined") selectedItemId = id;
+    const input = document.getElementById("itemSearch");
+    if(input && item) input.value = item.name;
+    if(typeof updatePreview === "function") updatePreview();
+    if(typeof calculate === "function") calculate();
+  }
+  if(typeof setTab === "function"){
+    setTab("calc");
+  }
+  if(item){
+    v29Toast(`✓ ${item.name} ajouté au calculateur`);
+  }
+}
+
+function v29Setup(){
+  const list = document.getElementById("recipeList");
+  if(list && !list.dataset.v29Bound){
+    list.dataset.v29Bound = "1";
+    list.addEventListener("click", e => {
+      const btn = e.target.closest("[data-v29-add]");
+      if(!btn) return;
+      e.preventDefault();
+      e.stopPropagation();
+      v29SelectForCalculator(btn.dataset.v29Add);
+    }, true);
+  }
+  setTimeout(v29AddPlusButtons, 250);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(v29Setup, 150);
+});

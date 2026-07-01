@@ -1,3 +1,4 @@
+const CACHE = "calcul-glucides-dt1-v2-9-0";
 const CACHE="calcul-glucides-dt1-v2-1-0";
 const FILES=["./","index.html","style.css","script.js","manifest.json","database.json","version.json","assets/aide-valeurs-nutritives.png","assets/aide-memoire-diabetes.jpeg"];
 self.addEventListener("install",e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)))});

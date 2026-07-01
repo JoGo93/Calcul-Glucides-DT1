@@ -120,3 +120,38 @@
 .version-panel strong{color:#111827;}
 .version-status-ok{color:#2e8b2f;font-weight:900;}
 .version-status-new{color:#b7791f;font-weight:900;}
+
+/* === v2.9 : bouton + dans le registre et unités simplifiées === */
+.add-to-calculator-btn{
+  border:2px solid #ff66df!important;
+  background:#fff!important;
+  color:#ff66df!important;
+  border-radius:0!important;
+  width:42px!important;
+  height:42px!important;
+  min-width:42px!important;
+  padding:0!important;
+  font-size:32px!important;
+  font-weight:900!important;
+  line-height:36px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin-right:8px!important;
+}
+.selection-toast{
+  position:fixed;
+  left:50%;
+  top:72px;
+  transform:translateX(-50%);
+  background:#fff;
+  border:1px solid #eee;
+  border-radius:16px;
+  padding:13px 18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.18);
+  z-index:2000;
+  font-weight:900;
+  color:#111827;
+  max-width:88vw;
+  text-align:center;
+}

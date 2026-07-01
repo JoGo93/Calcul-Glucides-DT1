@@ -1,5 +1,5 @@
 {
-  "version": "2.8.0",
+  "version": "2.9.0",
   "releasedAt": "2026-06-30",
-  "notes": "v2.8 : barre Rechercher non éditable, bouton Tout effacer, retrait du bouton Mettre à jour l’application, affichage versions."
+  "notes": "v2.9 : retrait d’unités inutiles dans Produit emballé et ajout du bouton + dans le Registre."
 }

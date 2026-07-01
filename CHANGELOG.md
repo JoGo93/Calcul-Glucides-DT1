@@ -1,8 +1,7 @@
 # Changelog
 
-## v2.8.0
-- Repart de la version fonctionnelle fournie.
-- La barre Rechercher est non éditable et ouvre le Registre.
-- Ajout du bouton Tout effacer.
-- Retrait du bouton Mettre à jour l’application.
-- Affichage de la version installée et de la dernière version disponible.
+## v2.9.0
+- Repart de la version fonctionnelle fournie par l’utilisateur.
+- Dans Créer recette → Produit emballé, retrait des unités : biscuit, tranche, barre, morceau, unité, autre.
+- Ajout d’un bouton + dans le Registre, à côté de l’étoile.
+- Le bouton + ajoute l’aliment ou la recette au calculateur et retourne à l’onglet Calculer.
