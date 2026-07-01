@@ -1,5 +1,5 @@
-const CACHE = "calcul-glucides-dt1-v3-0-0";
-const FILES = ["./","index.html","style.css","script.js","manifest.json","database.json","version.json","assets/aide-valeurs-nutritives.png","assets/aide-memoire-diabetes.jpeg"];
+const CACHE = "calcul-glucides-dt1-v3-1-0";
+const FILES = ["./","index.html","style.css","script.js","manifest.json","database.json","version.json","apple-touch-icon.png","icons/icon-192.png","icons/icon-512.png","assets/aide-valeurs-nutritives.png","assets/aide-memoire-diabetes.jpeg","assets/products/pain-quinoa-st-methode.jpg","assets/products/cheerios-multigrains.jpg","assets/products/beurre-arachide-kraft-leger-cremeux.jpg","assets/products/oikos-grec-nature-sans-sucre-2.jpg"];
 self.addEventListener("install", e => {
   self.skipWaiting();
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));

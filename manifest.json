@@ -1,6 +1,6 @@
 {
-  "name": "Calcul glucides DT1",
-  "short_name": "Glucides DT1",
+  "name": "LIVIA - Calcul glucides DT1",
+  "short_name": "LIVIA",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -15,6 +15,12 @@
       "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }

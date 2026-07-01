@@ -1,6 +1,6 @@
 
 const DEFAULT_ADMIN_PIN="112233";
-const APP_VERSION="3.0.0";
+const APP_VERSION="3.1.0";
 const VERSION_URL="version.json";
 const CENTRAL_DB_URL="database.json";
 const FALLBACK_ITEMS=[{id:"banane",name:"Banane",category:"Aliment",carbs:20.2,photo:"",source:"central"}];
@@ -177,8 +177,8 @@ document.addEventListener("DOMContentLoaded", () => setTimeout(setupNutritionHel
 
 
 /* === v2.8 : calculateur simplifié + version sans bouton update === */
-const LIVIA_APP_VERSION = "3.0.0";
-const LIVIA_VERSION_DATE = "2026-06-30";
+const LIVIA_APP_VERSION = "3.1.0";
+const LIVIA_VERSION_DATE = "2026-07-01";
 
 function liviaGoToRegistryFromSearch(){
   if(typeof setTab === "function") setTab("recipes");
@@ -363,3 +363,209 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /* === v3.0 : nouvelle base officielle DT1 simplifiee + version 3.0 === */
+
+
+/* === v3.1 : gestion base officielle, mesures usuelles, edition admin et poids recette auto === */
+const LS_DELETED_CENTRAL_IDS_V31 = "dt1_deleted_central_item_ids_v31";
+function v31DeletedIds(){try{return JSON.parse(localStorage.getItem(LS_DELETED_CENTRAL_IDS_V31)||"[]")}catch(e){return[]}}
+function v31SaveDeletedIds(ids){localStorage.setItem(LS_DELETED_CENTRAL_IDS_V31, JSON.stringify([...new Set(ids)]));}
+function v31Round1(n){return Math.round((Number(n)||0)*10)/10}
+function v31Escape(s){return String(s??"").replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function v31IsCentral(it){return it && (it.source||"").includes("base-officielle") || (it && it.source==="central")}
+
+if(typeof normalizeItem === "function" && !window.__v31NormalizeWrapped){
+  window.__v31NormalizeWrapped=true;
+  const oldNormalizeV31 = normalizeItem;
+  normalizeItem = function(r,idx=0,source="local"){
+    const it = oldNormalizeV31(r,idx,source);
+    it.brand = r.brand || it.brand || "";
+    it.commonMeasures = Array.isArray(r.commonMeasures) ? r.commonMeasures : (Array.isArray(r.measures)?r.measures:[]);
+    it.notes = r.notes || it.notes || "";
+    it.status = r.status || it.status || "";
+    it.priority = r.priority || it.priority || "";
+    return it;
+  }
+}
+
+function mergeItems(){
+  const deleted = new Set(v31DeletedIds());
+  const map = new Map();
+  for(const it of centralItems){ if(it && it.id && !deleted.has(it.id)) map.set(String(it.id), it); }
+  for(const it of localItems){ if(it && it.id) map.set(String(it.id), it); }
+  const byName = new Map();
+  for(const it of map.values()){
+    if(!it.name || isNaN(it.carbs)) continue;
+    const k = `${normalizeSearchText(it.name)}|${it.category}`;
+    byName.set(k,it);
+  }
+  items = [...byName.values()];
+}
+
+function v31MeasureButtonsHtml(it){
+  if(!it || !Array.isArray(it.commonMeasures) || !it.commonMeasures.length) return "";
+  return `<div id="commonMeasuresBox" class="common-measures"><small>Mesures usuelles</small><div>${it.commonMeasures.map(m=>`<button type="button" data-measure-grams="${Number(m.grams)||0}">${v31Escape(m.label)} (${String(m.grams).replace('.',',')} g)</button>`).join("")}</div></div>`;
+}
+
+if(typeof updatePreview === "function" && !window.__v31PreviewWrapped){
+  window.__v31PreviewWrapped=true;
+  const oldUpdatePreviewV31=updatePreview;
+  updatePreview=function(){
+    oldUpdatePreviewV31();
+    const r=selectedItem();
+    const box=document.getElementById("recipePreview");
+    if(!box) return;
+    const old=document.getElementById("commonMeasuresBox");
+    if(old) old.remove();
+    if(r && Array.isArray(r.commonMeasures) && r.commonMeasures.length){
+      box.insertAdjacentHTML("beforeend", v31MeasureButtonsHtml(r));
+    }
+  }
+}
+
+document.addEventListener("click", e=>{
+  const m=e.target.closest("[data-measure-grams]");
+  if(!m) return;
+  const grams=parseFloat(m.dataset.measureGrams)||0;
+  const w=document.getElementById("portionWeight");
+  if(w){w.value=grams; if(typeof calculate==="function") calculate();}
+});
+
+function v31AutoWeightFromIngredients(){
+  const total = (recipeIngredients||[]).reduce((s,i)=>s+(Number(i.grams)||0),0);
+  const fw=document.getElementById("finalRecipeWeight");
+  if(!fw) return;
+  if(!fw.dataset.userEdited || fw.value==="") fw.value = total ? v31Round1(total) : "";
+}
+
+if(typeof renderRecipeBuilder === "function" && !window.__v31RecipeBuilderWrapped){
+  window.__v31RecipeBuilderWrapped=true;
+  const oldRenderRecipeBuilderV31=renderRecipeBuilder;
+  renderRecipeBuilder=function(){
+    v31AutoWeightFromIngredients();
+    oldRenderRecipeBuilderV31();
+  }
+}
+
+function v31SetupRecipeWeightAuto(){
+  const fw=document.getElementById("finalRecipeWeight");
+  if(fw && !fw.dataset.v31Bound){
+    fw.dataset.v31Bound="1";
+    fw.addEventListener("input",()=>{fw.dataset.userEdited="1";});
+  }
+  const add=document.getElementById("addIngredientBtn");
+  if(add && !add.dataset.v31Bound){
+    add.dataset.v31Bound="1";
+    add.addEventListener("click",()=>setTimeout(()=>{v31AutoWeightFromIngredients(); if(typeof renderRecipeBuilder==="function") renderRecipeBuilder();},50));
+  }
+  const list=document.getElementById("ingredientList");
+  if(list && !list.dataset.v31Bound){
+    list.dataset.v31Bound="1";
+    list.addEventListener("click",()=>setTimeout(()=>{v31AutoWeightFromIngredients(); if(typeof renderRecipeBuilder==="function") renderRecipeBuilder();},50));
+  }
+}
+
+document.addEventListener("DOMContentLoaded",()=>setTimeout(v31SetupRecipeWeightAuto,250));
+
+function v31CreateEditModal(){
+  if(document.getElementById("v31EditModal")) return;
+  document.body.insertAdjacentHTML("beforeend", `
+  <div id="v31EditModal" class="modal hidden">
+    <div class="modal-content edit-modal-content">
+      <button id="v31EditClose" class="modal-close" type="button">×</button>
+      <h2>Modifier l'élément</h2>
+      <input id="v31EditId" type="hidden">
+      <label>Nom</label><input id="v31EditName">
+      <label>Type</label><select id="v31EditCategory"><option>Aliment</option><option>Recette</option></select>
+      <label>Glucides nets / 100 g</label><input id="v31EditCarbs" type="number" step="0.1" inputmode="decimal">
+      <label>Alias de recherche</label><textarea id="v31EditAliases" rows="2"></textarea>
+      <label>Groupe / catégorie</label><input id="v31EditGroup">
+      <label>Notes</label><textarea id="v31EditNotes" rows="3"></textarea>
+      <button id="v31EditSave" class="primary" type="button">Enregistrer</button>
+      <button id="v31EditCancel" class="secondary" type="button">Annuler</button>
+    </div>
+  </div>`);
+  document.getElementById("v31EditClose").onclick=()=>document.getElementById("v31EditModal").classList.add("hidden");
+  document.getElementById("v31EditCancel").onclick=()=>document.getElementById("v31EditModal").classList.add("hidden");
+  document.getElementById("v31EditSave").onclick=v31SaveEdit;
+}
+function v31OpenEditItem(id){
+  if(!isAdmin()){alert("Déverrouille les paramètres avec le code admin pour modifier."); return;}
+  const it=itemById(id); if(!it) return;
+  v31CreateEditModal();
+  document.getElementById("v31EditId").value=it.id;
+  document.getElementById("v31EditName").value=it.name||"";
+  document.getElementById("v31EditCategory").value=it.category||"Aliment";
+  document.getElementById("v31EditCarbs").value=it.carbs||0;
+  document.getElementById("v31EditAliases").value=it.aliases||"";
+  document.getElementById("v31EditGroup").value=it.group||"";
+  document.getElementById("v31EditNotes").value=it.notes||"";
+  document.getElementById("v31EditModal").classList.remove("hidden");
+}
+function v31SaveEdit(){
+  const id=document.getElementById("v31EditId").value;
+  const original=itemById(id); if(!original) return;
+  const name=document.getElementById("v31EditName").value.trim();
+  const carbs=parseFloat(document.getElementById("v31EditCarbs").value);
+  if(!name){alert("Entre un nom."); return;}
+  if(isNaN(carbs)){alert("Entre les glucides nets / 100 g."); return;}
+  const updated={...original, id, name, carbs:v31Round1(carbs), category:document.getElementById("v31EditCategory").value, aliases:document.getElementById("v31EditAliases").value.trim(), group:document.getElementById("v31EditGroup").value.trim(), notes:document.getElementById("v31EditNotes").value.trim(), source:"local"};
+  const idx=localItems.findIndex(x=>String(x.id)===String(id));
+  if(idx>=0) localItems[idx]=updated; else localItems.push(updated);
+  saveLocalItems();
+  document.getElementById("v31EditModal").classList.add("hidden");
+  if(typeof renderRecipes==="function") renderRecipes();
+  if(currentDetailItemId===id && typeof openDetail==="function") openDetail(id);
+  alert("Modification enregistrée localement.");
+}
+function v31DeleteItem(id){
+  if(!isAdmin()){alert("Déverrouille les paramètres avec le code admin pour supprimer."); return;}
+  const it=itemById(id); if(!it) return;
+  if(!confirm(`Supprimer « ${it.name} » du registre sur cet appareil?`)) return;
+  localItems=localItems.filter(x=>String(x.id)!==String(id));
+  if(v31IsCentral(it)){
+    const ids=v31DeletedIds(); ids.push(it.id); v31SaveDeletedIds(ids);
+  }
+  saveLocalItems(); mergeItems(); renderRecipes();
+  alert("Élément supprimé localement.");
+}
+
+if(typeof renderRecipes === "function" && !window.__v31RenderWrapped){
+  window.__v31RenderWrapped=true;
+  const oldRenderRecipesV31=renderRecipes;
+  renderRecipes=function(){
+    oldRenderRecipesV31();
+    if(!isAdmin()) return;
+    document.querySelectorAll("#recipeList .recipe-item").forEach(row=>{
+      const id=row.dataset.itemId || v29GetItemIdFromRow(row); if(!id) return;
+      const actions=row.querySelector(".actions"); if(!actions) return;
+      if(!actions.querySelector(`[data-v31-edit="${CSS.escape(id)}"]`)){
+        actions.insertAdjacentHTML("beforeend", `<button type="button" data-v31-edit="${v31Escape(id)}">✏️</button><button type="button" data-v31-delete="${v31Escape(id)}">🗑️</button>`);
+      }
+    });
+  }
+}
+
+document.addEventListener("click", e=>{
+  const edit=e.target.closest("[data-v31-edit],[data-edit]");
+  if(edit){e.preventDefault(); e.stopPropagation(); v31OpenEditItem(edit.dataset.v31Edit||edit.dataset.edit); return;}
+  const del=e.target.closest("[data-v31-delete],[data-delete]");
+  if(del){e.preventDefault(); e.stopPropagation(); v31DeleteItem(del.dataset.v31Delete||del.dataset.delete); return;}
+}, true);
+
+if(typeof openDetail === "function" && !window.__v31DetailWrapped){
+  window.__v31DetailWrapped=true;
+  const oldOpenDetailV31=openDetail;
+  openDetail=function(id){
+    oldOpenDetailV31(id);
+    const it=itemById(id); if(!it) return;
+    const block=document.getElementById("detailIngredientsBlock"), list=document.getElementById("detailIngredientsList");
+    let extra="";
+    if(Array.isArray(it.commonMeasures) && it.commonMeasures.length){
+      extra += `<div class="detail-ingredient"><strong>Mesures usuelles</strong><small>${it.commonMeasures.map(m=>`${v31Escape(m.label)} = ${String(m.grams).replace('.',',')} g`).join(" · ")}</small></div>`;
+    }
+    if(it.brand){extra += `<div class="detail-ingredient"><strong>Marque</strong><small>${v31Escape(it.brand)}</small></div>`;}
+    if(extra){list.insertAdjacentHTML("beforeend", extra); block.classList.remove("hidden");}
+    const editBtn=document.getElementById("detailEditBtn");
+    if(editBtn){editBtn.classList.toggle("hidden", !isAdmin()); editBtn.textContent="Modifier cet élément"; editBtn.onclick=()=>v31OpenEditItem(id);}
+  }
+}

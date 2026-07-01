@@ -1,5 +1,5 @@
 {
-  "version": "3.0.0",
-  "releasedAt": "2026-06-30",
-  "notes": "v3.0 : remplacement de la base CNF complète par la Base officielle DT1 simplifiée, ajout des alias de recherche et correction du bouton Tout effacer."
+  "version": "3.1.0",
+  "releasedAt": "2026-07-01",
+  "notes": "v3.1 : ajout des produits de marque avec photos, mesures usuelles, nouvelle icône LIVIA, édition admin des éléments du registre, calcul automatique du poids total des recettes et remplacement de doublons génériques."
 }

@@ -155,3 +155,14 @@
   max-width:88vw;
   text-align:center;
 }
+
+
+/* === v3.1 === */
+.common-measures{width:100%;margin-top:10px;padding-top:8px;border-top:1px solid #f1f1f1}
+.common-measures small{display:block;font-weight:800;color:#5f6574;margin-bottom:6px}
+.common-measures div{display:flex;flex-wrap:wrap;gap:8px}
+.common-measures button{border:1px solid #f4a4bf;background:#fff4f8;color:#bf0f70;border-radius:999px;padding:8px 11px;font-weight:800;font-size:.88rem}
+.edit-modal-content{max-width:540px;width:min(92vw,540px)}
+.edit-modal-content label{display:block;margin-top:10px;font-weight:800;color:#171b31}
+.edit-modal-content input,.edit-modal-content textarea,.edit-modal-content select{width:100%;box-sizing:border-box;border:1px solid #ddd;border-radius:14px;padding:11px;margin-top:5px;font-size:1rem}
+.edit-modal-content textarea{font-family:inherit;resize:vertical}

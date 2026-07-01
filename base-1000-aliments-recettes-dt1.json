@@ -1,132 +1,11 @@
 {
   "app": "Calcul glucides DT1",
-  "version": "3.0.0",
+  "version": "base-officielle-dt1-v3-1",
   "source": "Base officielle DT1 révisable - construite depuis Base_officielle_DT1_revision.xlsx",
   "calculation": "glucides nets par 100 g; base simplifiée et orientée usage quotidien",
-  "note": "Base volontairement réduite pour remplacer la base CNF complète. Les valeurs demeurent à valider selon les produits utilisés et les recettes familiales.",
-  "generatedAt": "2026-06-30",
+  "note": "Base officielle DT1 v3.1 : aliments courants, recettes familiales, produits de marque avec photos, mesures usuelles et remplacement des doublons generiques par produits de marque.",
+  "generatedAt": "2026-07-01T21:05:01.274693Z",
   "items": [
-    {
-      "id": "dt1-recette-010",
-      "name": "Biscuit proteine banane beurre de peanut",
-      "category": "Recette",
-      "carbs": 18.0,
-      "photo": "",
-      "source": "base-officielle-dt1-v3",
-      "aliases": "biscuit banane peanut",
-      "status": "A valider",
-      "notes": "Recette familiale actuelle"
-    },
-    {
-      "id": "dt1-recette-007",
-      "name": "Bol pancake/gaufre proteine",
-      "category": "Recette",
-      "carbs": 38.0,
-      "photo": "",
-      "source": "base-officielle-dt1-v3",
-      "aliases": "bol pancake gaufre",
-      "status": "A valider",
-      "notes": "Recette familiale actuelle"
-    },
-    {
-      "id": "dt1-recette-004",
-      "name": "Crepe au fromage cottage",
-      "category": "Recette",
-      "carbs": 7.0,
-      "photo": "",
-      "source": "base-officielle-dt1-v3",
-      "aliases": "crepe cottage",
-      "status": "A valider",
-      "notes": "Recette familiale actuelle"
-    },
-    {
-      "id": "dt1-recette-008",
-      "name": "Crepes proteinees",
-      "category": "Recette",
-      "carbs": 18.0,
-      "photo": "",
-      "source": "base-officielle-dt1-v3",
-      "aliases": "crepes pancakes proteinees banane",
-      "status": "A valider",
-      "notes": "Recette familiale actuelle"
-    },
-    {
-      "id": "dt1-recette-009",
-      "name": "Mi-cuit au micro-ondes",
-      "category": "Recette",
-      "carbs": 35.0,
-      "photo": "",
-      "source": "base-officielle-dt1-v3",
-      "aliases": "mi cuit mug cake",
-      "status": "A valider",
-      "notes": "Recette familiale actuelle"
-    },
-    {
-      "id": "dt1-recette-005",
-      "name": "Pain aux bananes proteine",
-      "category": "Recette",
-      "carbs": 11.0,
-      "photo": "",
-      "source": "base-officielle-dt1-v3",
-      "aliases": "pain banane proteine",
-      "status": "A valider",
-      "notes": "Recette familiale actuelle"
-    },
-    {
-      "id": "dt1-recette-011",
-      "name": "Pain aux bananes version sucre",
-      "category": "Recette",
-      "carbs": 45.0,
-      "photo": "",
-      "source": "base-officielle-dt1-v3",
-      "aliases": "pain banane sucre",
-      "status": "A valider",
-      "notes": "Recette familiale actuelle"
-    },
-    {
-      "id": "dt1-recette-001",
-      "name": "Pate chinois aux patates douces",
-      "category": "Recette",
-      "carbs": 7.8,
-      "photo": "",
-      "source": "base-officielle-dt1-v3",
-      "aliases": "pate chinois patate douce",
-      "status": "A valider",
-      "notes": "Recette familiale actuelle"
-    },
-    {
-      "id": "dt1-recette-003",
-      "name": "Poulet brocoli sauce Alfredo",
-      "category": "Recette",
-      "carbs": 3.0,
-      "photo": "",
-      "source": "base-officielle-dt1-v3",
-      "aliases": "poulet brocoli alfredo",
-      "status": "A valider",
-      "notes": "Recette familiale actuelle"
-    },
-    {
-      "id": "dt1-recette-006",
-      "name": "Pudding sante",
-      "category": "Recette",
-      "carbs": 9.0,
-      "photo": "",
-      "source": "base-officielle-dt1-v3",
-      "aliases": "pudding",
-      "status": "A valider",
-      "notes": "Recette familiale actuelle"
-    },
-    {
-      "id": "dt1-recette-002",
-      "name": "Salade de macaronis maison",
-      "category": "Recette",
-      "carbs": 21.0,
-      "photo": "",
-      "source": "base-officielle-dt1-v3",
-      "aliases": "salade macaroni",
-      "status": "A valider",
-      "notes": "Recette familiale actuelle"
-    },
     {
       "id": "dt1-aliment-0123",
       "name": "Amandes",
@@ -254,18 +133,35 @@
       "notes": ""
     },
     {
-      "id": "dt1-aliment-0122",
-      "name": "Beurre d'arachide",
+      "id": "dt1-prod-beurre-arachide-kraft-leger-cremeux",
+      "name": "Beurre d'arachide Kraft leger cremeux",
+      "brand": "Kraft",
       "category": "Aliment",
-      "carbs": 14.0,
-      "photo": "",
-      "source": "base-officielle-dt1-v3",
-      "group": "Collation",
-      "subgroup": "Noix",
-      "aliases": "beurre peanut arachide",
+      "carbs": 33.3,
+      "photo": "assets/products/beurre-arachide-kraft-leger-cremeux.jpg",
+      "source": "base-officielle-dt1-v3-1",
+      "group": "Tartinade",
+      "subgroup": "Beurres de noix",
+      "aliases": "beurre d'arachide, beurre arachide, kraft, kraft leger, kraft cremeux, peanut butter, beurre d'arachide leger",
       "priority": "Haute",
-      "status": "A valider",
-      "notes": "Verifier marque"
+      "status": "Valide etiquette",
+      "notes": "Produit de marque remplacant le beurre d'arachide generique. Glucides nets = 6 g glucides - 1 g fibres par 15 g.",
+      "label": {
+        "carbs": 6,
+        "fiber": 1,
+        "serving": 15,
+        "net": 5
+      },
+      "commonMeasures": [
+        {
+          "label": "1 c. a soupe",
+          "grams": 15
+        },
+        {
+          "label": "2 c. a soupe",
+          "grams": 30
+        }
+      ]
     },
     {
       "id": "dt1-aliment-0143",
@@ -464,20 +360,6 @@
       "notes": ""
     },
     {
-      "id": "dt1-aliment-0075",
-      "name": "Cereales Cheerios",
-      "category": "Aliment",
-      "carbs": 65.0,
-      "photo": "",
-      "source": "base-officielle-dt1-v3",
-      "group": "Produit emballe",
-      "subgroup": "Cereales",
-      "aliases": "cheerios",
-      "priority": "Moyenne",
-      "status": "A valider",
-      "notes": "Verifier etiquette"
-    },
-    {
       "id": "dt1-aliment-0076",
       "name": "Cereales Corn Flakes",
       "category": "Aliment",
@@ -546,6 +428,33 @@
       "priority": "Moyenne",
       "status": "A valider",
       "notes": "Verifier produit"
+    },
+    {
+      "id": "dt1-prod-cheerios-multigrains",
+      "name": "Cheerios multigrains",
+      "brand": "General Mills",
+      "category": "Aliment",
+      "carbs": 76.7,
+      "photo": "assets/products/cheerios-multigrains.jpg",
+      "source": "base-officielle-dt1-v3-1",
+      "group": "Produit cerealier",
+      "subgroup": "Cereales",
+      "aliases": "cheerios, cheerios multigrains, multi grain cheerios, cereales cheerios, general mills cheerios, cereales multigrains",
+      "priority": "Haute",
+      "status": "Valide etiquette",
+      "notes": "Produit de marque remplacant les cereales Cheerios generiques. Glucides nets = 25 g glucides - 2 g fibres par 30 g.",
+      "label": {
+        "carbs": 25,
+        "fiber": 2,
+        "serving": 30,
+        "net": 23
+      },
+      "commonMeasures": [
+        {
+          "label": "1 tasse",
+          "grams": 30
+        }
+      ]
     },
     {
       "id": "dt1-aliment-0139",
@@ -1556,6 +1465,37 @@
       "notes": ""
     },
     {
+      "id": "dt1-prod-oikos-grec-nature-sans-sucre-2",
+      "name": "Oikos Yogourt grec nature sans sucre ajoute 2 %",
+      "brand": "Oikos / Danone",
+      "category": "Aliment",
+      "carbs": 4.0,
+      "photo": "assets/products/oikos-grec-nature-sans-sucre-2.jpg",
+      "source": "base-officielle-dt1-v3-1",
+      "group": "Produit laitier",
+      "subgroup": "Yogourts",
+      "aliases": "oikos, oikos, yogourt grec, yogourt grec nature, yogourt grec sans sucre ajoute, yogourt oikos, danone oikos, yogourt nature grec",
+      "priority": "Haute",
+      "status": "Valide etiquette",
+      "notes": "Produit de marque remplacant le yogourt grec nature generique. Glucides nets = 7 g glucides - 0 g fibres par 175 g.",
+      "label": {
+        "carbs": 7,
+        "fiber": 0,
+        "serving": 175,
+        "net": 7
+      },
+      "commonMeasures": [
+        {
+          "label": "3/4 tasse",
+          "grams": 175
+        },
+        {
+          "label": "1 contenant",
+          "grams": 750
+        }
+      ]
+    },
+    {
       "id": "dt1-aliment-0004",
       "name": "Orange",
       "category": "Aliment",
@@ -1640,18 +1580,35 @@
       "notes": "Verifier marque"
     },
     {
-      "id": "dt1-aliment-0062",
-      "name": "Pain multigrain",
+      "id": "dt1-prod-pain-quinoa-st-methode",
+      "name": "Pain Quinoa - Les Grains St-Methode",
+      "brand": "Les Grains St-Methode",
       "category": "Aliment",
-      "carbs": 38.0,
-      "photo": "",
-      "source": "base-officielle-dt1-v3",
+      "carbs": 34.8,
+      "photo": "assets/products/pain-quinoa-st-methode.jpg",
+      "source": "base-officielle-dt1-v3-1",
       "group": "Produit cerealier",
       "subgroup": "Pains",
-      "aliases": "pain multigrain",
+      "aliases": "quinoa, pain quinoa, st-methode, les grains st-methode, pain les grains st-methode, pain multigrain",
       "priority": "Haute",
-      "status": "A valider",
-      "notes": "Verifier marque"
+      "status": "Valide etiquette",
+      "notes": "Produit de marque remplacant le pain multigrain generique. Glucides nets = 28 g glucides - 4 g fibres par 69 g.",
+      "label": {
+        "carbs": 28,
+        "fiber": 4,
+        "serving": 69,
+        "net": 24
+      },
+      "commonMeasures": [
+        {
+          "label": "1 tranche",
+          "grams": 34.5
+        },
+        {
+          "label": "2 tranches",
+          "grams": 69
+        }
+      ]
     },
     {
       "id": "dt1-aliment-0042",
@@ -2326,20 +2283,6 @@
       "notes": "Verifier marque"
     },
     {
-      "id": "dt1-aliment-0087",
-      "name": "Yogourt nature grec 0%",
-      "category": "Aliment",
-      "carbs": 3.5,
-      "photo": "",
-      "source": "base-officielle-dt1-v3",
-      "group": "Produit laitier",
-      "subgroup": "Yogourts",
-      "aliases": "yogourt grec nature",
-      "priority": "Haute",
-      "status": "A valider",
-      "notes": "Verifier marque"
-    },
-    {
       "id": "dt1-aliment-0088",
       "name": "Yogourt nature regulier",
       "category": "Aliment",
@@ -2366,6 +2309,163 @@
       "priority": "Haute",
       "status": "A valider",
       "notes": "Verifier marque"
+    },
+    {
+      "id": "dt1-recette-010",
+      "name": "Biscuit proteine banane beurre de peanut",
+      "category": "Recette",
+      "carbs": 18.0,
+      "photo": "",
+      "source": "base-officielle-dt1-v3",
+      "aliases": "biscuit banane peanut",
+      "status": "A valider",
+      "notes": "Recette familiale actuelle"
+    },
+    {
+      "id": "dt1-recette-007",
+      "name": "Bol pancake/gaufre proteine",
+      "category": "Recette",
+      "carbs": 38.0,
+      "photo": "",
+      "source": "base-officielle-dt1-v3",
+      "aliases": "bol pancake gaufre",
+      "status": "A valider",
+      "notes": "Recette familiale actuelle"
+    },
+    {
+      "id": "dt1-recette-004",
+      "name": "Crepe au fromage cottage",
+      "category": "Recette",
+      "carbs": 7.0,
+      "photo": "",
+      "source": "base-officielle-dt1-v3",
+      "aliases": "crepe cottage",
+      "status": "A valider",
+      "notes": "Recette familiale actuelle"
+    },
+    {
+      "id": "dt1-recette-crepes-banane-fromage-cottage",
+      "name": "Crepes banane et fromage cottage",
+      "category": "Recette",
+      "carbs": 12.6,
+      "photo": "",
+      "source": "base-officielle-dt1-v3-1",
+      "aliases": "banana pancake, pancake cottage, banana pancake cottage, crepes banane cottage",
+      "status": "Valide app",
+      "notes": "Recette familiale ajoutee depuis fiche existante. Poids final retenu selon fiche pour obtenir 12,6 g/100 g.",
+      "ingredients": [
+        {
+          "name": "Banane, mure",
+          "qty": 118,
+          "unit": "g",
+          "grams": 118,
+          "carbs": 23.6
+        },
+        {
+          "name": "Fromage cottage",
+          "qty": 100,
+          "unit": "g",
+          "grams": 100,
+          "carbs": 3.4
+        },
+        {
+          "name": "Oeuf entier",
+          "qty": 88,
+          "unit": "g",
+          "grams": 88,
+          "carbs": 0.6
+        }
+      ],
+      "totalCarbs": 27.6,
+      "finalWeight": 219
+    },
+    {
+      "id": "dt1-recette-008",
+      "name": "Crepes proteinees",
+      "category": "Recette",
+      "carbs": 18.0,
+      "photo": "",
+      "source": "base-officielle-dt1-v3",
+      "aliases": "crepes pancakes proteinees banane",
+      "status": "A valider",
+      "notes": "Recette familiale actuelle"
+    },
+    {
+      "id": "dt1-recette-009",
+      "name": "Mi-cuit au micro-ondes",
+      "category": "Recette",
+      "carbs": 35.0,
+      "photo": "",
+      "source": "base-officielle-dt1-v3",
+      "aliases": "mi cuit mug cake",
+      "status": "A valider",
+      "notes": "Recette familiale actuelle"
+    },
+    {
+      "id": "dt1-recette-005",
+      "name": "Pain aux bananes proteine",
+      "category": "Recette",
+      "carbs": 11.0,
+      "photo": "",
+      "source": "base-officielle-dt1-v3",
+      "aliases": "pain banane proteine",
+      "status": "A valider",
+      "notes": "Recette familiale actuelle"
+    },
+    {
+      "id": "dt1-recette-011",
+      "name": "Pain aux bananes version sucre",
+      "category": "Recette",
+      "carbs": 45.0,
+      "photo": "",
+      "source": "base-officielle-dt1-v3",
+      "aliases": "pain banane sucre",
+      "status": "A valider",
+      "notes": "Recette familiale actuelle"
+    },
+    {
+      "id": "dt1-recette-001",
+      "name": "Pate chinois aux patates douces",
+      "category": "Recette",
+      "carbs": 7.8,
+      "photo": "",
+      "source": "base-officielle-dt1-v3",
+      "aliases": "pate chinois patate douce",
+      "status": "A valider",
+      "notes": "Recette familiale actuelle"
+    },
+    {
+      "id": "dt1-recette-003",
+      "name": "Poulet brocoli sauce Alfredo",
+      "category": "Recette",
+      "carbs": 3.0,
+      "photo": "",
+      "source": "base-officielle-dt1-v3",
+      "aliases": "poulet brocoli alfredo",
+      "status": "A valider",
+      "notes": "Recette familiale actuelle"
+    },
+    {
+      "id": "dt1-recette-006",
+      "name": "Pudding sante",
+      "category": "Recette",
+      "carbs": 9.0,
+      "photo": "",
+      "source": "base-officielle-dt1-v3",
+      "aliases": "pudding",
+      "status": "A valider",
+      "notes": "Recette familiale actuelle"
+    },
+    {
+      "id": "dt1-recette-002",
+      "name": "Salade de macaronis maison",
+      "category": "Recette",
+      "carbs": 21.0,
+      "photo": "",
+      "source": "base-officielle-dt1-v3",
+      "aliases": "salade macaroni",
+      "status": "A valider",
+      "notes": "Recette familiale actuelle"
     }
   ]
 }
