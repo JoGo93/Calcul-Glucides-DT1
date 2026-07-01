@@ -1,16 +1,16 @@
 
 const DEFAULT_ADMIN_PIN="112233";
-const APP_VERSION="2.1.0";
+const APP_VERSION="3.0.0";
 const VERSION_URL="version.json";
 const CENTRAL_DB_URL="database.json";
 const FALLBACK_ITEMS=[{id:"banane",name:"Banane",category:"Aliment",carbs:20.2,photo:"",source:"central"}];
-const LS_CENTRAL_CACHE="dt1_central_database_cache_v1";
+const LS_CENTRAL_CACHE="dt1_central_database_cache_v3";
 const LS_LOCAL_ITEMS="dt1_local_family_items_v1";
 const OLD_KEYS=["dt1_items_v5_search","dt1_items_v4_categories","dt1_recipes_v3_secure","dt1_recipes_v2"];
 const LS_PIN="dt1_admin_pin"; const LS_ADMIN="dt1_admin_unlocked"; const LS_FAVORITES="dt1_favorite_item_ids_v1"; const LS_RECENTS="dt1_recent_item_ids_v1";
 let centralItems=[], localItems=[], items=[], selectedItemId="", currentFilter="Tous", currentLetterFilter="Tous", favoriteIds=[], recentIds=[];
 let currentRecipeIngredient=null, recipeIngredients=[], createdRecipePhotoData="", productPhotoData="", editingRecipeId="", currentDetailItemId="";
-function normalizeItem(r,idx=0,source="local"){return{id:r.id||`${source}_${Date.now()}_${idx}`,name:String(r.name||r.nom||"").trim(),carbs:Number(r.carbs??r.glucides??r.glucidesNets100g),category:(r.category==="Aliment"||r.category==="Recette")?r.category:"Recette",photo:r.photo||"",source:r.source||source,ingredients:r.ingredients||[],totalCarbs:r.totalCarbs,finalWeight:r.finalWeight,label:r.label};}
+function normalizeItem(r,idx=0,source="local"){return{id:r.id||`${source}_${Date.now()}_${idx}`,name:String(r.name||r.nom||"").trim(),carbs:Number(r.carbs??r.glucides??r.glucidesNets100g),category:(r.category==="Aliment"||r.category==="Recette")?r.category:"Recette",photo:r.photo||"",source:r.source||source,aliases:r.aliases||r.alias||"",group:r.group||r.cnfGroup||"",subgroup:r.subgroup||"",ingredients:r.ingredients||[],totalCarbs:r.totalCarbs,finalWeight:r.finalWeight,label:r.label};}
 function dedupeByNameAndCategory(list){const m=new Map(); for(const it of list){const k=`${it.name.toLowerCase()}|${it.category}`; m.set(k,it)} return [...m.values()];}
 function mergeItems(){items=dedupeByNameAndCategory([...centralItems,...localItems]).filter(x=>x.name&&!isNaN(x.carbs));}
 function sortedItems(list=items){return[...list].sort((a,b)=>a.name.localeCompare(b.name,"fr",{sensitivity:"base"}));}
@@ -22,7 +22,7 @@ function normalizeSearchText(text){return(text||"").normalize("NFD").replace(/[\
 const SEARCH_SYNONYMS={"farine blanche":["farine","blanche","tout usage","ble","enrichie","all purpose flour"],"farine":["farine","ble","tout usage","blanche"],"sucre blanc":["sucre","granule","blanc"],"cassonade":["cassonade","sucre brun"],"beurre":["beurre","butter"],"lait":["lait","milk"],"oeuf":["oeuf","oeufs","egg"],"banane":["banane","banana"],"pomme":["pomme","apple"],"riz blanc":["riz","blanc"],"pates":["pates","pasta","spaghetti","macaroni"],"cheerios":["cheerios","cereales"]};
 function expandSearchTerms(q){const base=normalizeSearchText(q), terms=base.split(" ").filter(Boolean); for(const key in SEARCH_SYNONYMS){if(base.includes(key)||key.includes(base)){terms.push(...SEARCH_SYNONYMS[key].map(normalizeSearchText).flatMap(x=>x.split(" ")))}} return[...new Set(terms.filter(Boolean))]}
 function levenshtein(a,b){a=normalizeSearchText(a);b=normalizeSearchText(b); if(!a||!b)return Math.max(a.length,b.length); const dp=Array.from({length:a.length+1},()=>Array(b.length+1).fill(0)); for(let i=0;i<=a.length;i++)dp[i][0]=i; for(let j=0;j<=b.length;j++)dp[0][j]=j; for(let i=1;i<=a.length;i++){for(let j=1;j<=b.length;j++){dp[i][j]=Math.min(dp[i-1][j]+1,dp[i][j-1]+1,dp[i-1][j-1]+(a[i-1]===b[j-1]?0:1))}} return dp[a.length][b.length]}
-function smartSearchScore(item,query){const q=normalizeSearchText(query), name=normalizeSearchText(item.name), terms=expandSearchTerms(query); let score=0; if(!q)return 0; if(name===q)score+=2000; if(name.startsWith(q))score+=1200; if(name.includes(q))score+=800; for(const t of terms){if(name.split(" ").includes(t))score+=260; else if(name.includes(t))score+=140; else if(name.split(" ").some(w=>levenshtein(w,t)<=1&&t.length>=4))score+=80} if(isFavorite(item.id))score+=180; if(recentIds.includes(item.id))score+=90; if(item.category==="Recette")score+=30; return score}
+function smartSearchScore(item,query){const q=normalizeSearchText(query), name=normalizeSearchText(item.name), alias=normalizeSearchText(item.aliases||""), meta=normalizeSearchText(`${item.group||""} ${item.subgroup||""}`), hay=`${name} ${alias} ${meta}`.trim(), terms=expandSearchTerms(query); let score=0; if(!q)return 0; if(name===q)score+=2000; if(name.startsWith(q))score+=1200; if(name.includes(q))score+=800; if(alias.includes(q))score+=650; if(meta.includes(q))score+=180; for(const t of terms){if(name.split(" ").includes(t))score+=260; else if(name.includes(t))score+=140; else if(alias.includes(t))score+=130; else if(meta.includes(t))score+=70; else if(hay.split(" ").some(w=>levenshtein(w,t)<=1&&t.length>=4))score+=80} if(isFavorite(item.id))score+=180; if(recentIds.includes(item.id))score+=90; if(item.category==="Recette")score+=30; return score}
 function loadFavoritesAndRecents(){try{favoriteIds=JSON.parse(localStorage.getItem(LS_FAVORITES)||"[]")}catch(e){favoriteIds=[]} try{recentIds=JSON.parse(localStorage.getItem(LS_RECENTS)||"[]")}catch(e){recentIds=[]}}
 function saveFavorites(){favoriteIds=favoriteIds.filter((id,i,a)=>a.indexOf(id)===i); localStorage.setItem(LS_FAVORITES,JSON.stringify(favoriteIds))} function saveRecents(){recentIds=recentIds.filter((id,i,a)=>a.indexOf(id)===i).slice(0,10); localStorage.setItem(LS_RECENTS,JSON.stringify(recentIds))} function isFavorite(id){return favoriteIds.includes(id)} function itemById(id){return items.find(x=>x.id===id)}
 function toggleFavorite(id){if(!id)return; favoriteIds=isFavorite(id)?favoriteIds.filter(x=>x!==id):[id,...favoriteIds]; saveFavorites(); updatePreview(); renderRecipes()}
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => setTimeout(setupNutritionHel
 
 
 /* === v2.8 : calculateur simplifié + version sans bouton update === */
-const LIVIA_APP_VERSION = "2.8.0";
+const LIVIA_APP_VERSION = "3.0.0";
 const LIVIA_VERSION_DATE = "2026-06-30";
 
 function liviaGoToRegistryFromSearch(){
@@ -192,11 +192,14 @@ function liviaClearCalculatorSelection(){
     if(search) search.value = "";
     const weight = document.getElementById("portionWeight");
     if(weight) weight.value = "";
-    const result = document.getElementById("result");
-    if(result) result.textContent = "0";
-    const preview = document.getElementById("itemPreview");
+    const result = document.getElementById("carbResult");
+    if(result) result.textContent = "0 g";
+    const preview = document.getElementById("recipePreview");
     if(preview) preview.classList.add("hidden");
+    const suggestions = document.getElementById("suggestions");
+    if(suggestions){ suggestions.innerHTML = ""; suggestions.classList.add("hidden"); }
     if(typeof calculate === "function") calculate();
+    if(typeof updatePreview === "function") updatePreview();
   }catch(e){}
 }
 
@@ -357,3 +360,6 @@ function v29Setup(){
 document.addEventListener("DOMContentLoaded", () => {
   setTimeout(v29Setup, 150);
 });
+
+
+/* === v3.0 : nouvelle base officielle DT1 simplifiee + version 3.0 === */

@@ -6,3 +6,10 @@ Modification appliquée :
 
 Mise à jour GitHub :
 Téléverse le contenu du dossier à la racine du dépôt, puis Commit changes.
+
+
+## Version 3.0
+- Nouvelle base officielle DT1 simplifiée générée depuis le fichier Excel de révision.
+- Base CNF complète remplacée afin d’améliorer la pertinence et la rapidité.
+- Alias de recherche inclus dans la base centrale.
+- Correction du bouton Tout effacer du Calculateur.

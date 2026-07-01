@@ -1,5 +1,5 @@
 {
-  "version": "2.9.0",
+  "version": "3.0.0",
   "releasedAt": "2026-06-30",
-  "notes": "v2.9 : retrait d’unités inutiles dans Produit emballé et ajout du bouton + dans le Registre."
+  "notes": "v3.0 : remplacement de la base CNF complète par la Base officielle DT1 simplifiée, ajout des alias de recherche et correction du bouton Tout effacer."
 }
