@@ -1,5 +1,5 @@
 {
-  "version": "3.1.0",
-  "releasedAt": "2026-07-01",
-  "notes": "v3.1 : ajout des produits de marque avec photos, mesures usuelles, nouvelle icône LIVIA, édition admin des éléments du registre, calcul automatique du poids total des recettes et remplacement de doublons génériques."
+  "version": "3.1.1",
+  "releasedAt": "2026-07-08",
+  "notes": "v3.1.1 : produits de marque ajoutes, photos des aliments generiques, corrections bleuets/pomme/mures, ajout de pomme sans pelure, ail, laitue, concombre et macaronis chinois au boeuf."
 }

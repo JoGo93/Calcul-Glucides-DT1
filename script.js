@@ -1,6 +1,6 @@
 
 const DEFAULT_ADMIN_PIN="112233";
-const APP_VERSION="3.1.0";
+const APP_VERSION="3.1.1";
 const VERSION_URL="version.json";
 const CENTRAL_DB_URL="database.json";
 const FALLBACK_ITEMS=[{id:"banane",name:"Banane",category:"Aliment",carbs:20.2,photo:"",source:"central"}];
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => setTimeout(setupNutritionHel
 
 
 /* === v2.8 : calculateur simplifié + version sans bouton update === */
-const LIVIA_APP_VERSION = "3.1.0";
+const LIVIA_APP_VERSION = "3.1.1";
 const LIVIA_VERSION_DATE = "2026-07-01";
 
 function liviaGoToRegistryFromSearch(){
