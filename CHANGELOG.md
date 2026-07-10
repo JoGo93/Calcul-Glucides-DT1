@@ -1,8 +1,8 @@
-# Changements
+# Changelog
 
-## v3.1.1
-- Ajout des produits de marque fournis avec photos, valeurs nutritionnelles, alias et mesures usuelles.
-- Ajout de nombreuses photos pour les aliments génériques du registre.
-- Correction des bleuets à 10,0 g de glucides nets / 100 g.
-- Ajout des mûres, pomme sans pelure, ail, laitue romaine, concombre et macaronis chinois au boeuf.
-- Mise à jour du cache/service worker pour forcer le chargement de la nouvelle base.
+## 3.1.2
+- Intégration réelle et vérifiée des produits de marque envoyés avec photos.
+- Ajout des photos officielles pour les aliments génériques fournis.
+- Correction des bleuets à 10,0 g/100 g; ajout de mûres et pomme sans pelure.
+- Ajout de Crêpes banane et fromage cottage et Macaronis chinois au bœuf.
+- Nouveau cache de base centrale pour forcer le chargement de database.json.
