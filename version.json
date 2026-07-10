@@ -1,5 +1,5 @@
 {
-  "version": "3.1.2",
-  "releasedAt": "2026-07-09",
-  "notes": "v3.1.2 : intégration vérifiée des produits de marque et photos génériques, correction du cache de base centrale, bleuets/mûres/pomme sans pelure et recettes ajoutées."
+  "version": "3.1.3",
+  "releasedAt": "2026-07-10",
+  "notes": "Correction des photos : images intégrées directement dans database.json pour éviter les chemins brisés et les problèmes de cache sur GitHub Pages."
 }

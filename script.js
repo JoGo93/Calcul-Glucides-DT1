@@ -1,10 +1,10 @@
 
 const DEFAULT_ADMIN_PIN="112233";
-const APP_VERSION="3.1.2";
+const APP_VERSION="3.1.3";
 const VERSION_URL="version.json";
 const CENTRAL_DB_URL="database.json";
 const FALLBACK_ITEMS=[{id:"banane",name:"Banane",category:"Aliment",carbs:20.2,photo:"",source:"central"}];
-const LS_CENTRAL_CACHE="dt1_central_database_cache_v312";
+const LS_CENTRAL_CACHE="dt1_central_database_cache_v313";
 const LS_LOCAL_ITEMS="dt1_local_family_items_v1";
 const OLD_KEYS=["dt1_items_v5_search","dt1_items_v4_categories","dt1_recipes_v3_secure","dt1_recipes_v2"];
 const LS_PIN="dt1_admin_pin"; const LS_ADMIN="dt1_admin_unlocked"; const LS_FAVORITES="dt1_favorite_item_ids_v1"; const LS_RECENTS="dt1_recent_item_ids_v1";
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => setTimeout(setupNutritionHel
 
 
 /* === v2.8 : calculateur simplifié + version sans bouton update === */
-const LIVIA_APP_VERSION = "3.1.2";
+const LIVIA_APP_VERSION = "3.1.3";
 const LIVIA_VERSION_DATE = "2026-07-01";
 
 function liviaGoToRegistryFromSearch(){

@@ -1,3 +1,9 @@
+# Version 3.1.3
+
+- Correction définitive de l’affichage des photos dans le Registre.
+- Les images des aliments et produits sont maintenant intégrées directement dans `database.json`.
+- Nouvelle clé de cache afin de forcer le rechargement de la base.
+
 # Changelog
 
 ## 3.1.2
