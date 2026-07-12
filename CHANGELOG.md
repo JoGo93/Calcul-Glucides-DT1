@@ -1,3 +1,9 @@
+# Version 3.1.4
+
+- Correction du chargement de la base complète dans la PWA iPhone.
+- Le dépassement de quota localStorage ne déclenche plus la base minimale.
+- Le service worker met en cache database.json avec une clé stable et évite les copies multiples.
+
 # Version 3.1.3
 
 - Correction définitive de l’affichage des photos dans le Registre.
