@@ -166,3 +166,6 @@
 .edit-modal-content label{display:block;margin-top:10px;font-weight:800;color:#171b31}
 .edit-modal-content input,.edit-modal-content textarea,.edit-modal-content select{width:100%;box-sizing:border-box;border:1px solid #ddd;border-radius:14px;padding:11px;margin-top:5px;font-size:1rem}
 .edit-modal-content textarea{font-family:inherit;resize:vertical}
+
+/* === v3.2.0 : portions de recette et précisions d'étiquette === */
+.field-hint{display:block;color:#7b8190;font-size:12px;line-height:1.35;margin:7px 2px 2px}.nutrition-label-heading{font-size:14px;font-weight:900;color:#a41646;margin:0 0 8px;padding:0}.recipe-result-card,.detail-stats{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}.preview-portion-stat{display:inline-flex;flex-direction:column;vertical-align:middle;margin-top:8px;margin-right:5px;padding:7px 10px;border:1px solid #9fd19b;border-radius:12px;background:#eff9ed}.preview-portion-stat small{margin:0;color:#397a35;font-size:11px;font-weight:800}.preview-portion-stat strong{font-size:17px;color:#2e8b2f;margin-top:2px}.product-serving-box .nutrition-label-heading{margin-bottom:2px}

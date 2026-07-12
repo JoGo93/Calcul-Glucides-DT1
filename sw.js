@@ -1,4 +1,4 @@
-const CACHE = "calcul-glucides-dt1-v3-1-4";
+const CACHE = "calcul-glucides-dt1-v3-2-0";
 const FILES = [
   "./",
   "index.html",

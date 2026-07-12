@@ -1,3 +1,11 @@
+# Version 3.2.0
+
+- Ajout du champ « Nombre de portions (optionnel) » pour les recettes maison.
+- Calcul automatique des glucides nets par portion.
+- Affichage des glucides par portion dans le créateur, la fiche du Registre et le Calculateur.
+- Ajout de la mention « Sur l’étiquette des valeurs nutritives » dans Produit emballé.
+- Calcul automatique du poids final à partir des ingrédients, avec modification manuelle possible.
+
 # Version 3.1.4
 
 - Correction du chargement de la base complète dans la PWA iPhone.
