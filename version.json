@@ -1,5 +1,5 @@
 {
-  "version": "3.2.0",
-  "releasedAt": "2026-07-12",
-  "notes": "Ajout du nombre de portions optionnel pour les recettes, calcul et affichage des glucides par portion, précision sur l’étiquette nutritionnelle et calcul automatique du poids final avec modification manuelle possible."
+  "version": "3.3.0",
+  "releasedAt": "2026-07-16",
+  "notes": "Mise à jour ciblée de la base officielle : ajout des pâtes Catelli, du spaghetti Primo et de la recette chorizo-halloumi; correction Alfredo et cottage; suppression d’un doublon de recette."
 }

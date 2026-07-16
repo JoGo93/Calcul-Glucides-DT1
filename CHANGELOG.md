@@ -1,3 +1,14 @@
+# Version 3.3.0
+
+- Vérification préalable des 180 entrées afin d’éviter les doublons.
+- Ajout de « Pâtes de blé (grains entiers) Catelli » à 25 g nets/100 g cuites.
+- Ajout de « Spaghetti (blanc) Primo — sec » à 68,2 g nets/100 g sec, avec les données de l’étiquette.
+- Ajout de « Spaghettis épicés au chorizo et au halloumi aux épices cajuns » à 14,5 g nets/100 g.
+- Correction de la sauce Alfredo à 5 g nets/100 g.
+- Remplacement de l’entrée générique « Fromage cottage » par « Fromage cottage 1 % » à 6,4 g nets/100 g.
+- Suppression du doublon des crêpes banane et fromage cottage; conservation de la valeur officielle de 12,6 g nets/100 g et de la photo déjà intégrée.
+- Les fruits et légumes déjà présents n’ont pas été réajoutés.
+
 # Version 3.2.0
 
 - Ajout du champ « Nombre de portions (optionnel) » pour les recettes maison.
